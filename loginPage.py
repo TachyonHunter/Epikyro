@@ -2,12 +2,20 @@ from tkinter import *
 from tkinter import ttk
 from login import *
 
+# Creates root.
 root = Tk()
 root.title('Login')
 
+# Creates mainframe (window, basically).
 mainframe = ttk.Frame(root, padding="3 3 12 12")
 mainframe.grid(column=0, row=0, sticky='N W E S')
+
+# Creates the username and password entries (user-input textboxes.
 username = StringVar()
 password = StringVar()
 usernameField = Entry(mainframe, textvariable=username)
-#tempt
+passwordField = Entry(mainframe, textvariable=password, show='*')
+usernameField.grid(row=2, column=2, sticky='N W E S')
+passwordField.grid(row=4, column=2, sticky='N W E S')
+
+root.mainloop()
