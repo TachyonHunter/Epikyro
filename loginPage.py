@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from login import *
 
+userDB = {'admin':'1234'}
+
 # Creates root.
 root = Tk()
 root.title('Login')
@@ -22,4 +24,8 @@ passwordField.grid(row=4, column=2, sticky='N W E S')
 Label(mainframe, text='Login:', font=('Segoe UI', 25)).grid(row=0, column=2, sticky='N W E S')
 Label(mainframe, text='Username:', font=('Segoe UI', 13)).grid(row=1, column=2, sticky='N W E S')
 Label(mainframe, text='Password:', font=('Segoe UI', 13)).grid(row=3, column=2, sticky='N W E S')
+
+#button
+Button(mainframe, text="Login", command=login(username.get(), password.get(), userDB)).grid(row=5, column=2, sticky='W')
+Label(mainframe, text='').grid(row=6, column=2)
 root.mainloop()
