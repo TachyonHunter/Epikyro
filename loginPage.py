@@ -25,7 +25,7 @@ Label(mainframe, text='Login:', font=('Segoe UI', 25)).grid(row=0, column=0, sti
 Label(mainframe, text='Username:', font=('Segoe UI', 13)).grid(row=1, column=0, sticky='N W E S')
 Label(mainframe, text='Password:', font=('Segoe UI', 13)).grid(row=3, column=0, sticky='N W E S')
 
-#Function to call our function... Tkinter runs all isolated functions on startup.
+#Function to call our function... Tkinter runs all isolated functions on startup...
 def LoginCaller(*args):
     Login(username.get(), password.get(), userNotification)
 
