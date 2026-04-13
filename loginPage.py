@@ -26,6 +26,6 @@ Label(mainframe, text='Username:', font=('Segoe UI', 13)).grid(row=1, column=2, 
 Label(mainframe, text='Password:', font=('Segoe UI', 13)).grid(row=3, column=2, sticky='N W E S')
 
 #button
-Button(mainframe, text="Login", command=login(username.get(), password.get(), userDB)).grid(row=5, column=2, sticky='W')
+Button(mainframe, text="Login", command=Login(username.get(), password.get())).grid(row=5, column=2, sticky='W')
 Label(mainframe, text='').grid(row=6, column=2)
 root.mainloop()
