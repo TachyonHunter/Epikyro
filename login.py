@@ -1,11 +1,12 @@
 import sqlite3
+from tkinter import *
 # Error codes:
 # incorrectUN - Incorrect Username passed
 # incorrectPW - Incorrect Password passed
 # correct - Success
 
-# Alright understood
-def Login(username, password, statusText):#username, password, and the database with users.
+def Login(username, password, statusText): # username, password, and the .
+    print(f'Username: {username}\nPassword: {password}\nStatusText: {statusText.get()}')
     #connect to the database
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
@@ -21,10 +22,8 @@ def Login(username, password, statusText):#username, password, and the database 
     #close the connection
     cursor.close()
     conn.close()
-    print(usernameFromDB)
-    print(passwordFromDB)
 
-    #check the inputted values against the DB
+    # Check the inputted values against the DB.
     if usernameFromDB==None:
         statusText.set('Username not found...')
     elif password != passwordFromDB[0]:
