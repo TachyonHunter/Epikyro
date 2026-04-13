@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from login import *
 
+
 # Creates root.
 root = Tk()
 root.title('Login')
