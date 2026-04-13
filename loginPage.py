@@ -15,6 +15,7 @@ mainframe.grid(column=0, row=0, sticky='N W E S')
 # Creates the username and password entries (user-input textboxes).
 username = StringVar()
 password = StringVar()
+userNotification = StringVar()
 usernameField = Entry(mainframe, textvariable=username)
 passwordField = Entry(mainframe, textvariable=password, show='*')
 usernameField.grid(row=2, column=2, sticky='N W E S')
@@ -26,6 +27,6 @@ Label(mainframe, text='Username:', font=('Segoe UI', 13)).grid(row=1, column=2, 
 Label(mainframe, text='Password:', font=('Segoe UI', 13)).grid(row=3, column=2, sticky='N W E S')
 
 #button
-Button(mainframe, text="Login", command=Login(username.get(), password.get())).grid(row=5, column=2, sticky='W')
-Label(mainframe, text='').grid(row=6, column=2)
+Button(mainframe, text="Login", command=Login(username.get(), password.get(), userNotification)).grid(row=5, column=2, sticky='W')
+Label(mainframe, textvariable=userNotification).grid(row=6, column=2)
 root.mainloop()
