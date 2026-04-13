@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import ttk
 from login import *
 
-userDB = {'admin':'1234'}
-
 # Creates root.
 root = Tk()
 root.title('Login')
