@@ -4,36 +4,40 @@ from functools import partial
 from login import *
 
 # Creates root.
-root = Tk()
-root.title('Login')
+def LoginWindow():
+    loginWindow = Toplevel()
+    loginWindow.title('Login')
+    loginWindow.columnconfigure(0, weight=1)
+    loginWindow.rowconfigure(0, weight=1)
 
-# Creates mainframe (window, basically).
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky='N W E S')
+    # Creates mainframe (window, basically).
+    mainframe = ttk.Frame(loginWindow, padding="3 3 12 12")
+    mainframe.grid(column=0, row=0, sticky='N W E S')
+    mainframe.columnconfigure(0, weight=1)
 
-# Creates the username and password entries (user-input textboxes).
-username = StringVar()
-password = StringVar()
-userNotification = StringVar()
-usernameField = Entry(mainframe, textvariable=username)
-passwordField = Entry(mainframe, textvariable=password, show='*')
-usernameField.grid(row=2, column=0, sticky='N W E S')
-passwordField.grid(row=4, column=0, sticky='N W E S')
+    # Creates the username and password entries (user-input textboxes).
+    username = StringVar()
+    password = StringVar()
+    userNotification = StringVar()
+    usernameField = Entry(mainframe, textvariable=username, font=("Segoe UI", 17))
+    passwordField = Entry(mainframe, textvariable=password, show='*', font=("Segoe UI", 17))
+    usernameField.grid(row=2, column=0)
+    passwordField.grid(row=4, column=0)
 
-# Creating labels.
-Label(mainframe, text='Login:', font=('Segoe UI', 25)).grid(row=0, column=0, sticky='N W E S')
-Label(mainframe, text='Username:', font=('Segoe UI', 13)).grid(row=1, column=0, sticky='N W E S')
-Label(mainframe, text='Password:', font=('Segoe UI', 13)).grid(row=3, column=0, sticky='N W E S')
+    # Creating labels.
+    ttk.Label(mainframe, text='Login:', font=('Segoe UI', 52)).grid(row=0, column=0)
+    ttk.Label(mainframe, text='Username:', font=('Segoe UI', 22)).grid(row=1, column=0)
+    ttk.Label(mainframe, text='Password:', font=('Segoe UI', 22)).grid(row=3, column=0)
 
-#Function to call our function... Tkinter runs all isolated functions on startup...
-def LoginCaller(*args):
-    Login(username.get(), password.get(), userNotification)
+    #Function to call our function... Tkinter runs all isolated functions on startup...
+    def LoginCaller(*args):
+        Login(username.get(), password.get(), userNotification)
 
-# Button.
-Button(mainframe, text="Login", command=LoginCaller).grid(row=5, column=0, sticky='W')
+    # Button.
+    ttk.Button(mainframe, text="Login", command=LoginCaller).grid(row=5, column=0)
 
-# The status for the users.
-Label(mainframe, textvariable=userNotification).grid(row=6, column=0, sticky='W')
-root.bind("<Return>", LoginCaller)
+    # The status for the users.
+    ttk.Label(mainframe, textvariable=userNotification).grid(row=6, column=0)
+    loginWindow.bind("<Return>", LoginCaller)
 
-root.mainloop()
+    loginWindow.mainloop()
