@@ -1,9 +1,5 @@
 import sqlite3
 from tkinter import *
-# Error codes:
-# incorrectUN - Incorrect Username passed
-# incorrectPW - Incorrect Password passed
-# correct - Success
 
 def Login(username, password, statusText, ): # username, password, and the .
     print(f'Username: {username}\nPassword: {password}\nStatusText: {statusText.get()}')
