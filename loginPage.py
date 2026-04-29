@@ -4,7 +4,7 @@ from functools import partial
 from login import *
 
 # Creates root.
-def LoginWindow():
+def LoginWindow(welcomeNotification, loginButtonText):
     loginWindow = Toplevel()
     loginWindow.title('Login')
     loginWindow.columnconfigure(0, weight=1)
@@ -19,8 +19,8 @@ def LoginWindow():
     username = StringVar()
     password = StringVar()
     userNotification = StringVar()
-    usernameField = Entry(mainframe, textvariable=username, font=("Segoe UI", 17))
-    passwordField = Entry(mainframe, textvariable=password, show='*', font=("Segoe UI", 17))
+    usernameField = Entry(mainframe, textvariable=username, font=("Segoe UI", 13))
+    passwordField = Entry(mainframe, textvariable=password, show='*', font=("Segoe UI", 13))
     usernameField.grid(row=2, column=0)
     passwordField.grid(row=4, column=0)
 
@@ -31,13 +31,21 @@ def LoginWindow():
 
     #Function to call our function... Tkinter runs all isolated functions on startup...
     def LoginCaller(*args):
-        Login(username.get(), password.get(), userNotification)
+        Login(username.get(), password.get(), userNotification, )
 
     # Button.
-    ttk.Button(mainframe, text="Login", command=LoginCaller).grid(row=5, column=0)
+    ttk.Button(mainframe, text="Login", command=LoginCaller, style='Buttons.TButton').grid(row=5, column=0, pady=(10,0))
 
     # The status for the users.
     ttk.Label(mainframe, textvariable=userNotification).grid(row=6, column=0)
     loginWindow.bind("<Return>", LoginCaller)
+
+    def OnClose():
+        if userNotification.get() == 'Login successful...':
+            welcomeNotification.set(f'Welcome {username.get()}!')
+            loginButtonText.set('Switch account')
+        loginWindow.destroy()
+
+    loginWindow.protocol("WM_DELETE_WINDOW", OnClose)
 
     loginWindow.mainloop()

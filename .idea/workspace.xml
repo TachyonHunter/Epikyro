@@ -4,18 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d8fc9d5-cbeb-48c0-8d60-d8a6cfb4a9ea" name="Changes" comment="Stuff">
-      <change afterPath="$PROJECT_DIR$/startPage.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/styling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2026_5_53_pm_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2026_5_53_pm__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_3_26_pm_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_3_26_pm__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_8_03_pm_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_8_03_pm__Changes_.xml" beforeDir="false" />
+    <list default="true" id="3d8fc9d5-cbeb-48c0-8d60-d8a6cfb4a9ea" name="Changes" comment="28.04.26">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/login.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/loginPage.py" beforeDir="false" afterPath="$PROJECT_DIR$/loginPage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/startPage.py" beforeDir="false" afterPath="$PROJECT_DIR$/startPage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styling.py" beforeDir="false" afterPath="$PROJECT_DIR$/styling.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,6 +65,7 @@
   "keyToString": {
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.Start-up.executor": "Run",
     "Python.loginPage.executor": "Run",
     "Python.main.executor": "Run",
     "Python.startPage.executor": "Run",
@@ -103,6 +98,31 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\naten\PycharmProjects\Epikyro" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Start-up" type="PythonConfigurationType" factoryName="Python">
+      <module name="Epikyro" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.14 (CS - Nathan Nibu John 11F)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/startPage.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -207,7 +227,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776098658137</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="28.04.26">
+      <option name="closed" value="true" />
+      <created>1777388221132</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1777388221132</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -256,7 +284,8 @@
     <MESSAGE value=".gitignore test from pycharm" />
     <MESSAGE value="Database" />
     <MESSAGE value="Stuff" />
-    <option name="LAST_COMMIT_MESSAGE" value="Stuff" />
+    <MESSAGE value="28.04.26" />
+    <option name="LAST_COMMIT_MESSAGE" value="28.04.26" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Epikyro$main.coverage" NAME="main Coverage Results" MODIFIED="1775999869907" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -5,7 +5,7 @@ from tkinter import *
 # incorrectPW - Incorrect Password passed
 # correct - Success
 
-def Login(username, password, statusText): # username, password, and the .
+def Login(username, password, statusText, ): # username, password, and the .
     print(f'Username: {username}\nPassword: {password}\nStatusText: {statusText.get()}')
     #connect to the database
     conn = sqlite3.connect('users.db')
