@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d8fc9d5-cbeb-48c0-8d60-d8a6cfb4a9ea" name="Changes" comment="28.04.26">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="3d8fc9d5-cbeb-48c0-8d60-d8a6cfb4a9ea" name="Changes" comment="Mid-school changes 2">
+      <change afterPath="$PROJECT_DIR$/Aptos.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fonts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/login.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/loginPage.py" beforeDir="false" afterPath="$PROJECT_DIR$/loginPage.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/startPage.py" beforeDir="false" afterPath="$PROJECT_DIR$/startPage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.db" beforeDir="false" afterPath="$PROJECT_DIR$/users.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styling.py" beforeDir="false" afterPath="$PROJECT_DIR$/styling.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +80,7 @@
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/naten/PycharmProjects/Epikyro&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/USER/PycharmProjects/Epikyro&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -97,6 +97,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\USER\PycharmProjects\Epikyro" />
       <recent name="C:\Users\naten\PycharmProjects\Epikyro" />
     </key>
   </component>
@@ -235,7 +236,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777388221132</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Mid-school changes">
+      <option name="closed" value="true" />
+      <created>1777437208354</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1777437208354</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,7 +294,8 @@
     <MESSAGE value="Database" />
     <MESSAGE value="Stuff" />
     <MESSAGE value="28.04.26" />
-    <option name="LAST_COMMIT_MESSAGE" value="28.04.26" />
+    <MESSAGE value="Mid-school changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Mid-school changes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Epikyro$main.coverage" NAME="main Coverage Results" MODIFIED="1775999869907" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

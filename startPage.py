@@ -3,8 +3,10 @@ from tkinter import ttk
 from functools import partial
 from loginPage import LoginWindow
 from styling import SetupStyles
+from fonts import LoadFont
 
 # Creates root.
+LoadFont()
 root = Tk()
 root.title('Start-up')
 root.columnconfigure(0, weight=1)
@@ -27,17 +29,17 @@ titleFrame.grid(column=0, row=1, sticky='N W E S')
 titleFrame.columnconfigure(0, weight=1)
 
 # The text.
-ttk.Label(titleFrame, text='Epikyro', font=('Segoe UI', 56)).grid(row=0, column=0)
-ttk.Label(titleFrame, text='επικυρώ', font=('Segoe UI', 32)).grid(row=1, column=0)
-ttk.Label(titleFrame, text='(ep-ee-kee-ROH)', font=('Segoe UI', 22)).grid(row=2, column=0)
+ttk.Label(titleFrame, text='Epikyro', font=('Aptos', 56)).grid(row=0, column=0)
+ttk.Label(titleFrame, text='επικυρώ', font=('Aptos', 32)).grid(row=1, column=0)
+ttk.Label(titleFrame, text='(ep-ee-kee-ROH)', font=('Aptos', 22)).grid(row=2, column=0)
 ttk.Label(mainframe, text="""Epikyro is an HR Employee Management System, built to streamline the application and review process for position candidates.
 It takes in details from formatted CVs, and stores them in a company-wide database to reference easily.
 Epikyro supports a criteria search and grading system, management of a CV database and even interview scheduling.""",
-          font=('Segoe UI', 18)).grid(row=2, column=0)
+          font=('Aptos', 18)).grid(row=2, column=0)
 ttk.Label(mainframe, text="""Team members:
 - Nathan Nibu John
 - Hussain Sameer Ulde
-- Adwaiy Chidanandan Ajay""", font=('Segoe UI', 18), justify='left').grid(row=3, column=0, sticky='WS')
+- Adwaiy Chidanandan Ajay""", font=('Aptos', 18), justify='left').grid(row=3, column=0, sticky='WS')
 
 # The header.
 headerFrame = Frame(mainframe, bg='#e5e5e5')
@@ -57,8 +59,8 @@ loginButtonText.set('Log in')
 welcomeNotification.set('No user logged in...')
 headerFrame.columnconfigure(0, weight=1)
 headerFrame.columnconfigure(1, weight=1)
-ttk.Label(headerFrame, textvariable=welcomeNotification, font=('Segoe UI', 16)).grid(row=0, column=0, sticky='W')
-ttk.Button(headerFrame, textvariable=loginButtonText,  style="Buttons.TButton", command=LoginWindowOpener).grid(row=0, column=2, sticky='E')
-logOutButton = ttk.Button(headerFrame, text='Sign out', style="Buttons.TButton", command=LogOut)
+ttk.Label(headerFrame, textvariable=welcomeNotification, style="HeaderText.TLabel").grid(row=0, column=0, sticky='W')
+ttk.Button(headerFrame, textvariable=loginButtonText,  style="HeaderButtons.TButton", command=LoginWindowOpener).grid(row=0, column=2, sticky='E', padx=(0,5))
+logOutButton = ttk.Button(headerFrame, text='Sign out', style="HeaderButtons.TButton", command=LogOut)
 logOutButton.grid_remove()
 root.mainloop()
