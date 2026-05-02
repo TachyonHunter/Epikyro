@@ -4,7 +4,7 @@ from functools import partial
 from login import *
 
 # Creates root.
-def LoginWindow(welcomeNotification, loginButtonText):
+def LoginWindow(welcomeNotification, loginButtonText, logOutButton):
     loginWindow = Toplevel()
     loginWindow.title('Login')
     loginWindow.columnconfigure(0, weight=1)
@@ -19,15 +19,15 @@ def LoginWindow(welcomeNotification, loginButtonText):
     username = StringVar()
     password = StringVar()
     userNotification = StringVar()
-    usernameField = Entry(mainframe, textvariable=username, font=("Segoe UI", 13))
-    passwordField = Entry(mainframe, textvariable=password, show='*', font=("Segoe UI", 13))
+    usernameField = ttk.Entry(mainframe, textvariable=username, font=("Aptos", 13))
+    passwordField = ttk.Entry(mainframe, textvariable=password, show='*', font=("Aptos", 13))
     usernameField.grid(row=2, column=0)
     passwordField.grid(row=4, column=0)
 
     # Creating labels.
-    ttk.Label(mainframe, text='Login:', font=('Segoe UI', 52)).grid(row=0, column=0)
-    ttk.Label(mainframe, text='Username:', font=('Segoe UI', 22)).grid(row=1, column=0)
-    ttk.Label(mainframe, text='Password:', font=('Segoe UI', 22)).grid(row=3, column=0)
+    ttk.Label(mainframe, text='Login:', font=('Aptos', 52)).grid(row=0, column=0)
+    ttk.Label(mainframe, text='Username:', font=('Aptos', 22)).grid(row=1, column=0)
+    ttk.Label(mainframe, text='Password:', font=('Aptos', 22)).grid(row=3, column=0)
 
     #Function to call our function... Tkinter runs all isolated functions on startup...
     def LoginCaller(*args):
@@ -44,6 +44,7 @@ def LoginWindow(welcomeNotification, loginButtonText):
         if userNotification.get() == 'Login successful...':
             welcomeNotification.set(f'Welcome {username.get()}!')
             loginButtonText.set('Switch account')
+            logOutButton.grid(row=0, column=1, sticky='E')
         loginWindow.destroy()
 
     loginWindow.protocol("WM_DELETE_WINDOW", OnClose)
