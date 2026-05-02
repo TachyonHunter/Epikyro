@@ -2,16 +2,18 @@ import json
 
 class CV:
     def __init__(self, name: str, age: int, dob: str, email: str, phone: int, skills: list, education: list, work: list):
-        self.name = name
-        self.age = age
-        self.dob = dob
-        self.email = email
-        self.phone = phone
-        self.skills = skills
-        self.education = education
-        self.work = work
-        self.CV={
-            "profile":{
+        pass
+
+    @classmethod
+    def cvExisting(cls, searchQuery: str):
+        with open(f"CV/{searchQuery}.json") as file:
+            CV = json.load(file)
+            return cls(CV)
+
+    @classmethod
+    def cvCreate(cls, name: str, age: int, dob: str, email: str, phone: int, skills: list, education: list, work: list):
+        CV = {
+            "profile": {
                 "Name": name,
                 "Age": age,
                 "Date of Birth": dob,
@@ -22,13 +24,12 @@ class CV:
                 "Work Experience": work
             }
         }
-
-    def cvCreate(self):
         try:
             with open(f'CV/{self.name}.json', 'x') as file:
-                json.dump(self.CV, file)
+                json.dump(CV, file)
         except FileExistsError:
             print("file already exists")
+        return cls(name, age, dob, email, phone, skills, education, work)
 
     def cvUpdate(self):
         with open(f'CV/{self.name}.json', 'w') as file:
