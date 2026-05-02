@@ -27,6 +27,9 @@ def DataBaseConnect(username, password):
 
 
 def Login(username, password, statusText, ): # username, password, and the .
+    if username is None or password is None:
+        statusText.set('Please enter a username and a password...')
+
     usernameFromDB, passwordFromDB, salt = DataBaseConnect(username, password)
     passwordHash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, main.iterations).hex()
 
