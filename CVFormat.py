@@ -10,7 +10,6 @@ class CV:
         self.skills = skills
         self.education = education
         self.work = work
-
         self.CV={
             "profile":{
                 "Name": name,
