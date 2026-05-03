@@ -1,7 +1,8 @@
 import json
 
 class CV:
-    def __init__(self, name: str, age: int, dob: str, email: str, phone: int, skills: list, education: list, work: list):
+    def __init__(self, data: dict):
+        self.data = data
         pass
 
     @classmethod
@@ -29,7 +30,7 @@ class CV:
                 json.dump(CV, file)
         except FileExistsError:
             print("file already exists")
-        return cls(name, age, dob, email, phone, skills, education, work)
+        return cls(CV)
 
     def cvUpdate(self):
         with open(f'CV/{self.name}.json', 'w') as file:
