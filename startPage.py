@@ -9,11 +9,12 @@ from fonts import LoadFont
 LoadFont()
 root = Tk()
 root.title('Start-up')
+root.state('zoomed')
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 styles = SetupStyles()
 
-# Creates mainframe (window, basically).
+# Creates mainframe.
 mainframe = ttk.Frame(root)
 mainframe.grid(column=0, row=0, sticky='N W E S')
 
@@ -44,23 +45,54 @@ ttk.Label(mainframe, text="""Team members:
 # The header.
 headerFrame = Frame(mainframe, bg='#e5e5e5')
 headerFrame.grid(column=0, row=0, sticky='N W E S')
+headerFrame.columnconfigure(0, weight=1)
+headerFrame.columnconfigure(2, weight=1)
 
 def LoginWindowOpener():
-    LoginWindow(welcomeNotification, loginButtonText, logOutButton)
+    LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, adminFrame, headerFrame, generalFrame)
 
 def LogOut():
     logOutButton.grid_remove()
-    loginButtonText.set('Log in')
+    loginOrSwitchButtonText.set('Log in')
     welcomeNotification.set('No user logged in...')
+    generalFrame.grid_remove()
+    adminFrame.grid_remove()
+
+loginOrSwitchButtonText = StringVar()
+loginOrSwitchButtonText.set('Log in')
+ttk.Button(headerFrame, textvariable=loginOrSwitchButtonText,  style="HeaderButtons.TButton", command=LoginWindowOpener).grid(row=0, column=3, sticky='E', padx=(0,5))
 
 welcomeNotification = StringVar()
-loginButtonText = StringVar()
-loginButtonText.set('Log in')
 welcomeNotification.set('No user logged in...')
-headerFrame.columnconfigure(0, weight=1)
-headerFrame.columnconfigure(1, weight=1)
 ttk.Label(headerFrame, textvariable=welcomeNotification, style="HeaderText.TLabel").grid(row=0, column=0, sticky='W')
-ttk.Button(headerFrame, textvariable=loginButtonText,  style="HeaderButtons.TButton", command=LoginWindowOpener).grid(row=0, column=2, sticky='E', padx=(0,5))
+
 logOutButton = ttk.Button(headerFrame, text='Sign out', style="HeaderButtons.TButton", command=LogOut)
 logOutButton.grid_remove()
+
+# Frame specifically for admins.
+def UserEditWindowOpener():
+    pass # Temporary
+
+def UserInspectWindowOpener():
+    pass # Temporary
+
+adminFrame = Frame(headerFrame, bg='#e5e5e5')
+adminFrame.grid(column=1, row=0, sticky='N W E S')
+adminFrame.grid_remove()
+ttk.Button(adminFrame, text='Edit users', style="HeaderButtons.TButton", command=UserEditWindowOpener).grid(row=0, column=0, sticky='E')
+ttk.Button(adminFrame, text='Inspect users', style="HeaderButtons.TButton", command=UserInspectWindowOpener).grid(row=0, column=1, sticky='E')
+
+# Frame for general users.
+def CVManagerWindowOpener():
+    pass # Temporary
+
+def InterviewManagerWindowOpener():
+    pass # Temporary
+
+generalFrame = Frame(headerFrame, bg='#e5e5e5')
+generalFrame.grid(column=1, row=0, sticky='N W E S')
+generalFrame.grid_remove()
+ttk.Button(generalFrame, text='Manage CVs and Candidates', style="HeaderButtons.TButton", command=CVManagerWindowOpener).grid(row=0, column=0, sticky='E')
+ttk.Button(generalFrame, text='Manage Interviews', style="HeaderButtons.TButton", command=InterviewManagerWindowOpener).grid(row=0, column=1, sticky='E')
+
 root.mainloop()
