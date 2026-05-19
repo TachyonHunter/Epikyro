@@ -6,13 +6,13 @@ class CV:
         pass
 
     @classmethod
-    def cvExisting(cls, searchQuery: str):
+    def CVExisting(cls, searchQuery: str):
         with open(f"CV/{searchQuery}.json") as file:
             CV = json.load(file)
             return cls(CV)
 
     @classmethod
-    def cvCreate(cls, name: str, age: int, dob: str, email: str, phone: int, skills: list, education: list, work: list):
+    def CVCreate(cls, name: str, age: int, dob: str, email: str, phone: int, skills: list, education: list, work: list):
         CV = {
             "profile": {
                 "Name": name,
@@ -33,6 +33,6 @@ class CV:
             print("file already exists")
             return cls.cvExisting(name)
 
-    def cvUpdate(self):
+    def CVUpdate(self):
         with open(f'CV/{self.name}.json', 'w') as file:
             json.dump(self.CV, file)
