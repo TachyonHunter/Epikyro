@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from functools import partial
-from loginPage import LoginWindow
+from loginWindow import LoginWindow
 from styling import SetupStyles
 from fonts import LoadFont
 
