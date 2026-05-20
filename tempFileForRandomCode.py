@@ -27,3 +27,5 @@ for i in range(20):
     ttk.Button(item, text="Open").pack(side="right")
 
     item.pack(fill="x", pady=5)
+
+root.mainloop()
