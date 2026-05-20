@@ -7,4 +7,3 @@ def userList():
     cursor.close()
     conn.close()
     return users
-
