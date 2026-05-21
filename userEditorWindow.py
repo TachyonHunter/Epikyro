@@ -12,21 +12,21 @@ def UserEditorWindow():
     # Modifiable widget that supports scrolling, etc.
     canvas = Canvas(userEditWindow)
     scrollbar = ttk.Scrollbar(userEditWindow, orient="vertical", command=canvas.yview)
-    scrollableFrame = ttk.Frame(canvas) # The frame to scroll through.
+    scrollableFrame = ttk.Frame(canvas, padding=5) # The frame to scroll through.
     scrollableFrame.bind(
         "<Configure>",
         lambda e: canvas.configure(scrollregion=canvas.bbox("all")) # Reconfigures the window when needed.
     )
-    canvas.create_window((0, 0), window=scrollableFrame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    canvasWindow = canvas.create_window((0, 0), window=scrollableFrame, anchor="nw")
 
-    # def IsInside(event, frame):
-    #     x, y = event.x_root, event.y_root # Coordinates of mouse.
-    #     withinXWidth = frame.winfo_rootx() <= x <= (frame.winfo_rootx() + frame.winfo_width())
-    #     withinYWidth = frame.winfo_rooty() <= y <= (frame.winfo_rooty() + frame.winfo_height())
-    #     return withinXWidth and withinYWidth
+    def resizeScrollableFrame(event):
+        canvas.itemconfig(canvasWindow, width=event.width)
+
+    canvas.bind("<Configure>", resizeScrollableFrame)
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+    scrollbar.pack(side="right", fill="y", padx=5, pady=5)
 
     # Defining actions to perform on hovers, etc.
     def MakeEnterLambda(frame):
@@ -36,16 +36,23 @@ def UserEditorWindow():
         return lambda e: OnLeave(frame)
 
     def OnEnter(frame):
-        print('inside')
+        frame.hovered = True
         for child in frame.winfo_children():
             if isinstance(child, ttk.Frame):
-                child.grid(column=1, row=0)
+                child.grid(column=1, row=0, sticky="NSE")
 
     def OnLeave(frame):
-        for child in frame.winfo_children():
-            if isinstance(child, ttk.Frame):
-                child.grid_remove()
+        frame.hovered = False
 
+        def check():
+            if not frame.hovered:
+                for child in frame.winfo_children():
+                    if isinstance(child, ttk.Frame):
+                        child.grid_remove()
+
+        frame.after(50, check)
+
+    # Function to bind an event to all children of a widget with a given lambda.
     def BindAllChildren(widget, command, lambdaCallable):
         for child in widget.winfo_children():
             child.bind(command, lambdaCallable)
@@ -53,24 +60,29 @@ def UserEditorWindow():
 
     # Creating a sub-frame for every user.
     for i in users:
-        elementFrame = Frame(scrollableFrame, padx=10, pady=10, bd=1, relief="solid")
-        ttk.Label(elementFrame, text=i).grid(column=0, row=0, sticky="W")
+        borderFrame = Frame(scrollableFrame, bg="#e5e5e5", height=60, padx=1, pady=1)
+        borderFrame.pack_propagate(False)
+
+        elementFrame = Frame(borderFrame, padx=5, pady=5)
+        elementFrame.columnconfigure(0, weight=1)
+        elementFrame.rowconfigure(0, weight=1)
+
+        # Username.
+        ttk.Label(elementFrame, text=i, font=('Aptos', 16)).grid(column=0, row=0, sticky="W")
+
+        # Frame with all buttons that perform actions.
         interactiveElementsFrame = ttk.Frame(elementFrame)
         interactiveElementsFrame.grid(column=1, row=0, sticky="E")
         interactiveElementsFrame.grid_remove()
-        ttk.Button(interactiveElementsFrame, text="Open").grid(row=0, column=0)
-        elementFrame.pack(fill="x", pady=5)
+
+        interactiveElementsFrame.rowconfigure(0, weight=1)
+        ttk.Button(interactiveElementsFrame, text="Edit User Details", style='Buttons.TButton').grid(row=0, column=0, sticky='E')
+        ttk.Button(interactiveElementsFrame, text="Delete User", style='Buttons.TButton').grid(row=0, column=1, sticky='E')
+        elementFrame.pack(fill="both", expand=True, padx=1, pady=1)
+        borderFrame.pack(fill="x", pady=5)
 
         # Binding mouse enter and leave events.
-        elementFrame.bind("<Enter>", MakeEnterLambda(elementFrame))
-        BindAllChildren(elementFrame, "<Enter>", MakeEnterLambda(elementFrame))
-        elementFrame.bind("<Leave>", MakeLeaveLambda(elementFrame))
-        BindAllChildren(elementFrame, "<Leave>", MakeLeaveLambda(elementFrame))
+        BindAllChildren(borderFrame, "<Enter>", MakeEnterLambda(elementFrame))
+        BindAllChildren(borderFrame, "<Leave>", MakeLeaveLambda(elementFrame))
 
-    def OnClose():
-        userEditWindow.destroy()
-
-    userEditWindow.protocol("WM_DELETE_WINDOW", OnClose)
     userEditWindow.mainloop()
-
-UserEditorWindow()

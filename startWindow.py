@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-from functools import partial
 from loginWindow import LoginWindow
+from userEditorWindow import UserEditorWindow
 from debugStyling import SetupStyles
 from fonts import LoadFont
 
@@ -71,7 +71,7 @@ logOutButton.grid_remove()
 
 # Frame specifically for admins.
 def UserEditWindowOpener():
-    pass # Temporary
+    UserEditorWindow()
 
 def UserInspectWindowOpener():
     pass # Temporary
