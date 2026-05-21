@@ -22,13 +22,13 @@ def UserEditorWindow():
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    # Defining actions to perform on hovers, etc.
-    def IsInside(event, frame):
-        x, y = event.x_root, event.y_root # Coordinates of mouse.
-        withinXWidth = frame.winfo_rootx() <= x <= (frame.winfo_rootx() + frame.winfo_width())
-        withinYWidth = frame.winfo_rooty() <= y <= (frame.winfo_rooty() + frame.winfo_height())
-        return withinXWidth and withinYWidth
+    # def IsInside(event, frame):
+    #     x, y = event.x_root, event.y_root # Coordinates of mouse.
+    #     withinXWidth = frame.winfo_rootx() <= x <= (frame.winfo_rootx() + frame.winfo_width())
+    #     withinYWidth = frame.winfo_rooty() <= y <= (frame.winfo_rooty() + frame.winfo_height())
+    #     return withinXWidth and withinYWidth
 
+    # Defining actions to perform on hovers, etc.
     def MakeEnterLambda(frame):
         return lambda e: OnEnter(frame)
 
@@ -46,6 +46,11 @@ def UserEditorWindow():
             if isinstance(child, ttk.Frame):
                 child.grid_remove()
 
+    def BindAllChildren(widget, command, lambdaCallable):
+        for child in widget.winfo_children():
+            child.bind(command, lambdaCallable)
+            BindAllChildren(child, command, lambdaCallable)
+
     # Creating a sub-frame for every user.
     for i in users:
         elementFrame = Frame(scrollableFrame, padx=10, pady=10, bd=1, relief="solid")
@@ -58,10 +63,9 @@ def UserEditorWindow():
 
         # Binding mouse enter and leave events.
         elementFrame.bind("<Enter>", MakeEnterLambda(elementFrame))
+        BindAllChildren(elementFrame, "<Enter>", MakeEnterLambda(elementFrame))
         elementFrame.bind("<Leave>", MakeLeaveLambda(elementFrame))
-        for child in elementFrame.winfo_children():
-            child.bind("<Enter>", MakeEnterLambda(elementFrame))
-            child.bind("<Leave>", MakeLeaveLambda(elementFrame))
+        BindAllChildren(elementFrame, "<Leave>", MakeLeaveLambda(elementFrame))
 
     def OnClose():
         userEditWindow.destroy()
