@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from functools import partial
 from loginWindow import LoginWindow
-from styling import SetupStyles
+from debugStyling import SetupStyles
 from fonts import LoadFont
 
 # Creates root.
@@ -46,7 +46,6 @@ ttk.Label(mainframe, text="""Team members:
 headerFrame = Frame(mainframe, bg='#e5e5e5')
 headerFrame.grid(column=0, row=0, sticky='N W E S')
 headerFrame.columnconfigure(0, weight=1)
-headerFrame.columnconfigure(2, weight=1)
 
 def LoginWindowOpener():
     LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, adminFrame, headerFrame, generalFrame)
@@ -67,6 +66,7 @@ welcomeNotification.set('No user logged in...')
 ttk.Label(headerFrame, textvariable=welcomeNotification, style="HeaderText.TLabel").grid(row=0, column=0, sticky='W')
 
 logOutButton = ttk.Button(headerFrame, text='Sign out', style="HeaderButtons.TButton", command=LogOut)
+logOutButton.grid(row=0, column=2, sticky='E')
 logOutButton.grid_remove()
 
 # Frame specifically for admins.
@@ -77,7 +77,7 @@ def UserInspectWindowOpener():
     pass # Temporary
 
 adminFrame = Frame(headerFrame, bg='#e5e5e5')
-adminFrame.grid(column=1, row=0, sticky='N W E S')
+adminFrame.grid(column=1, row=0, sticky='E')
 adminFrame.grid_remove()
 ttk.Button(adminFrame, text='Edit users', style="HeaderButtons.TButton", command=UserEditWindowOpener).grid(row=0, column=0, sticky='E')
 ttk.Button(adminFrame, text='Inspect users', style="HeaderButtons.TButton", command=UserInspectWindowOpener).grid(row=0, column=1, sticky='E')

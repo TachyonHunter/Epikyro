@@ -2,14 +2,14 @@ from tkinter import *
 from tkinter import ttk
 
 def SetupStyles():
-    debugStyling = ttk.Style()
-    debugStyling.configure("TFrame",
+    projectStyling = ttk.Style()
+    projectStyling.configure("TFrame",
                     background="#ffcccc",
                     borderwidth=2,
                     relief="solid")
 
-    debugStyling.configure("TLabel",
+    projectStyling.configure("TLabel",
                     background="#ccffcc")
 
-    debugStyling.configure("TButton",
+    projectStyling.configure("TButton",
                     background="#ccccff")

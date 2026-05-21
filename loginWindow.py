@@ -7,6 +7,9 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
     loginWindow.title('Login')
     loginWindow.columnconfigure(0, weight=1)
     loginWindow.rowconfigure(0, weight=1)
+    loginWindow.update_idletasks()
+    loginWindow.lift()
+    loginWindow.focus_force()
 
     # Code to center the window.
     screenWidth = loginWindow.winfo_screenwidth()
@@ -26,6 +29,7 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
     password = StringVar()
     userNotification = StringVar()
     usernameField = ttk.Entry(mainframe, textvariable=username, font=("Aptos", 13))
+    usernameField.focus_set()
     passwordField = ttk.Entry(mainframe, textvariable=password, show='*', font=("Aptos", 13))
     usernameField.grid(row=2, column=0)
     passwordField.grid(row=4, column=0)
@@ -52,11 +56,11 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
             loginOrSwitchButtonText.set('Switch account')
             logOutButton.grid(row=0, column=2, sticky='E')
             if username.get() == 'admin':
-                adminFrame.grid(row=0, column=1, sticky='E')
+                adminFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
                 headerFrame.columnconfigure(1, weight=1)
                 generalFrame.grid_remove()
             else:
-                generalFrame.grid(row=0, column=1, sticky='E')
+                generalFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
                 headerFrame.columnconfigure(1, weight=1)
                 adminFrame.grid_remove()
         loginWindow.destroy()
