@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from loginWindow import LoginWindow
 from userEditorWindow import UserEditorWindow
-from debugStyling import SetupStyles
+from styling import SetupStyles
 from fonts import LoadFont
 
 # Creates root.

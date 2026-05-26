@@ -1,4 +1,5 @@
 ﻿import sqlite3
+
 # Function returning a list of users from our database.
 def ListUsers():
     conn = sqlite3.connect('users.db')
@@ -8,3 +9,7 @@ def ListUsers():
     cursor.close()
     conn.close()
     return users
+
+# Function deleting a user and returning its relevant data.
+def DeleteUser(user):
+    pass

@@ -2,10 +2,12 @@ from tkinter import *
 from tkinter import ttk
 from login import *
 from DBTools import *
+from DeleteConfirmationWindow import DeleteConfirmationWindow
 
 def UserEditorWindow():
     userEditWindow = Toplevel()
     userEditWindow.title('Edit Users')
+    userEditWindow.state('zoomed')
 
     users = ListUsers()
 
@@ -43,14 +45,13 @@ def UserEditorWindow():
 
     def OnLeave(frame):
         frame.hovered = False
-
-        def check():
+        def Check():
             if not frame.hovered:
                 for child in frame.winfo_children():
                     if isinstance(child, ttk.Frame):
                         child.grid_remove()
 
-        frame.after(50, check)
+        frame.after(50, Check)
 
     # Function to bind an event to all children of a widget with a given lambda.
     def BindAllChildren(widget, command, lambdaCallable):
@@ -62,22 +63,25 @@ def UserEditorWindow():
     for i in users:
         borderFrame = Frame(scrollableFrame, bg="#e5e5e5", height=60, padx=1, pady=1)
         borderFrame.pack_propagate(False)
-
         elementFrame = Frame(borderFrame, padx=5, pady=5)
         elementFrame.columnconfigure(0, weight=1)
         elementFrame.rowconfigure(0, weight=1)
 
-        # Username.
-        ttk.Label(elementFrame, text=i, font=('Aptos', 16)).grid(column=0, row=0, sticky="W")
+        username = ttk.Label(elementFrame, text=i, font=('Aptos', 16))
+        username.grid(column=0, row=0, sticky="W")
 
         # Frame with all buttons that perform actions.
         interactiveElementsFrame = ttk.Frame(elementFrame)
         interactiveElementsFrame.grid(column=1, row=0, sticky="E")
         interactiveElementsFrame.grid_remove()
 
+        # Functions used by buttons.
+        def MakeDeleteLambda(username):
+            return lambda: DeleteConfirmationWindow(username.cget("text")) # Getting the text in the username label.
+
         interactiveElementsFrame.rowconfigure(0, weight=1)
         ttk.Button(interactiveElementsFrame, text="Edit User Details", style='Buttons.TButton').grid(row=0, column=0, sticky='E')
-        ttk.Button(interactiveElementsFrame, text="Delete User", style='Buttons.TButton').grid(row=0, column=1, sticky='E')
+        ttk.Button(interactiveElementsFrame, text="Delete User", style='Buttons.TButton', command=MakeDeleteLambda(username)).grid(row=0, column=1, sticky='E')
         elementFrame.pack(fill="both", expand=True, padx=1, pady=1)
         borderFrame.pack(fill="x", pady=5)
 

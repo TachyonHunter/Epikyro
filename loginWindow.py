@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from login import *
+from GUITools import *
 
 def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, adminFrame, headerFrame, generalFrame):
     loginWindow = Toplevel()
@@ -11,14 +12,9 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
     loginWindow.lift()
     loginWindow.focus_force()
 
-    # Code to center the window.
-    screenWidth = loginWindow.winfo_screenwidth()
-    screenHeight = loginWindow.winfo_screenheight()
-    windowWidth = 500
-    windowHeight = 300
-    x = (screenWidth // 2) - (windowWidth // 2)
-    y = (screenHeight // 2) - (windowHeight // 2)
-    loginWindow.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
+    desiredWidth, desiredHeight = 500, 300
+    loginWindow.geometry(WindowSizer(loginWindow, desiredWidth, desiredHeight))
+
     # Creates mainframe.
     mainframe = ttk.Frame(loginWindow, padding="3 3 12 12")
     mainframe.grid(column=0, row=0, sticky='N W E S')
@@ -28,7 +24,7 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
     username = StringVar()
     password = StringVar()
     userNotification = StringVar()
-    usernameField = ttk.Entry(mainframe, textvariable=username, font=("Aptos", 13))
+    usernameField = ttk.Entry(mainframe, textvariable=username, font=('Aptos', 13))
     usernameField.focus_set()
     passwordField = ttk.Entry(mainframe, textvariable=password, show='*', font=("Aptos", 13))
     usernameField.grid(row=2, column=0)
@@ -41,7 +37,7 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
 
     #Function to call our function.
     def LoginCaller(*args):
-        Login(username.get(), password.get(), userNotification, )
+        Login(username.get(), password.get(), lambda success: OnClose(success))
 
     # Button.
     ttk.Button(mainframe, text="Login", command=LoginCaller, style='Buttons.TButton').grid(row=5, column=0, pady=(10,0))
@@ -50,8 +46,8 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
     ttk.Label(mainframe, textvariable=userNotification).grid(row=6, column=0)
     loginWindow.bind("<Return>", LoginCaller)
 
-    def OnClose():
-        if userNotification.get() == 'Login successful...':
+    def OnClose(success):
+        if success:
             welcomeNotification.set(f'Welcome {username.get()}!')
             loginOrSwitchButtonText.set('Switch account')
             logOutButton.grid(row=0, column=2, sticky='E')
@@ -64,7 +60,5 @@ def LoginWindow(welcomeNotification, loginOrSwitchButtonText, logOutButton, admi
                 headerFrame.columnconfigure(1, weight=1)
                 adminFrame.grid_remove()
         loginWindow.destroy()
-
-    loginWindow.protocol("WM_DELETE_WINDOW", OnClose)
 
     loginWindow.mainloop()
