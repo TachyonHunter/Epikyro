@@ -27,9 +27,10 @@ def DeleteConfirmationWindow(user):
             if userConfirmInput.get() == user:
                 DeleteUser(userConfirmInput.get())
                 # Need to store user as some recently deleted thing too...
+                messagebox.showinfo('Success!', f'{user} has been deleted.', parent=mainframe)
                 deleteConfirmationWindow.destroy()
             else:
-                messagebox.showerror("Error", "Mismatched Username...")
+                messagebox.showerror("Error", "Mismatched Username...", parent=mainframe)
                 deleteConfirmationWindow.destroy()
 
         ttk.Label(mainframe, text='Re-enter the username:', font=('Aptos', 16)).grid(row=2, column=0)

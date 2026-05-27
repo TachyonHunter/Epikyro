@@ -1,0 +1,2 @@
+def UserDetailEditWindow(username):
+    pass
