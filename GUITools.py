@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
+# Function to give .geometry() formatted window instructions.
 def WindowSizer(window, windowWidth, windowHeight):
     screenWidth = window.winfo_screenwidth()
     screenHeight = window.winfo_screenheight()
@@ -8,6 +9,20 @@ def WindowSizer(window, windowWidth, windowHeight):
     y = (screenHeight // 2) - (windowHeight // 2)
     return f"{windowWidth}x{windowHeight}+{x}+{y}"
 
+# Function to bind an event to all children of a widget with a given lambda.
+def BindAllChildren(widget, command, operationLambda, bindInteractives=True):
+    if bindInteractives:
+        for child in widget.winfo_children():
+            child.bind(command, operationLambda)
+            BindAllChildren(child, command, operationLambda)
+    else:
+        interactives = (ttk.Button, ttk.Entry, ttk.Scrollbar, ttk.Scale, ttk.Combobox, ttk.Checkbutton, ttk.Radiobutton)
+        for child in widget.winfo_children():
+            if not isinstance(child, interactives):
+                child.bind(command, operationLambda)
+                BindAllChildren(child, command, operationLambda, False)
+
+# Function to make hoverable, interactive lists.
 def HoverableListMaker(window, names, interactiveFrameLambda):
     # Modifiable widget that supports scrolling, etc.
     canvas = Canvas(window)
@@ -52,22 +67,16 @@ def HoverableListMaker(window, names, interactiveFrameLambda):
 
         frame.after(50, Check)
 
-    # Function to bind an event to all children of a widget with a given lambda.
-    def BindAllChildren(widget, command, operationLambda):
-        for child in widget.winfo_children():
-            child.bind(command, operationLambda)
-            BindAllChildren(child, command, operationLambda)
-
     # Creating a sub-frame for every user.
-    for i in names:
-        borderFrame = Frame(scrollableFrame, bg="#e5e5e5", height=60, padx=1, pady=1)
+    for name in names:
+        borderFrame = ttk.Frame(scrollableFrame, style='Header/Border.TFrame', height=60, padding=1)
         borderFrame.pack_propagate(False)
         elementFrame = Frame(borderFrame, padx=5, pady=5)
         elementFrame.columnconfigure(0, weight=1)
         elementFrame.rowconfigure(0, weight=1)
 
-        name = ttk.Label(elementFrame, text=i, font=('Aptos', 16))
-        name.grid(column=0, row=0, sticky="W")
+        nameLabel = ttk.Label(elementFrame, text=name, style='Body.TLabel')
+        nameLabel.grid(column=0, row=0, sticky="W")
 
         # Frame with all buttons that perform actions.
         interactiveElementsFrame = ttk.Frame(elementFrame)
@@ -75,7 +84,7 @@ def HoverableListMaker(window, names, interactiveFrameLambda):
         interactiveElementsFrame.rowconfigure(0, weight=1)
         interactiveElementsFrame.grid_remove()
 
-        # Lambda creating required elements, etc.
+        # Lambda editing the interactive frame to add the required elements, etc.
         interactiveFrameLambda(interactiveElementsFrame, name)
 
         # Packing elements.

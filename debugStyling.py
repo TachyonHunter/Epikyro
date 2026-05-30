@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
-def SetupStyles():
+def SetupStyles(*args):
     projectStyling = ttk.Style()
     projectStyling.configure("TFrame",
                     background="#ffcccc",
