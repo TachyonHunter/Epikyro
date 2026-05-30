@@ -11,14 +11,14 @@ def GetUNPWSaltFromDB(username, password):
     cursor = conn.cursor()
 
     # get username
-    cursor.execute("SELECT name FROM users WHERE name = ?", (username,))
+    cursor.execute("SELECT username FROM users WHERE username = ?", (username,))
     usernameFromDB = cursor.fetchone();
 
     # get the corresponding password
-    cursor.execute("SELECT password FROM users WHERE name = ?", (username,))
+    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
     passwordFromDB = cursor.fetchone();
 
-    cursor.execute("SELECT salt FROM users WHERE name = ?", (username,))
+    cursor.execute("SELECT salt FROM users WHERE username = ?", (username,))
     salt = cursor.fetchone();
 
     # close the connection

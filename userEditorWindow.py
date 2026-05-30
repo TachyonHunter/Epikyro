@@ -5,7 +5,7 @@ from login import *
 from DBTools import *
 from GUITools import BindAllChildren
 from deleteConfirmationWindow import DeleteConfirmationWindow
-from UserDetailEditWindow import UserDetailEditWindow
+from UserDetailEditWindow import UserDetailsWindow
 
 def UserEditorWindow():
     userEditWindow = Toplevel()
@@ -21,7 +21,7 @@ def UserEditorWindow():
             return lambda: DeleteConfirmationWindow(username)  # Getting the text in the username label.
 
         def MakeEditLambda(username):
-            return lambda: UserDetailEditWindow(username)
+            return lambda: UserDetailsWindow(username)
 
         # Making the interactive elements.
         ttk.Button(interactiveElementsFrame, text="Edit User Details", style='Buttons.TButton',
