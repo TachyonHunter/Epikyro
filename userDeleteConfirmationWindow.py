@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from DBTools import *
-from GUITools import *
+from GUITools import WindowSizer, BindAllChildren
 
-def DeleteConfirmationWindow(user):
+def DeleteConfirmationWindow(user, refreshListLambda):
     deleteConfirmationWindow = Toplevel()
     deleteConfirmationWindow.grab_set()
     deleteConfirmationWindow.focus_set()
@@ -25,9 +25,13 @@ def DeleteConfirmationWindow(user):
 
         def DeleteUserCaller(*args):
             if userConfirmInput.get() == user:
-                DeleteUser(userConfirmInput.get())
-                # Need to store user as some recently deleted thing too...
-                messagebox.showinfo('Success!', f'{user} has been deleted.', parent=mainframe)
+                operationResult = DeleteUser(userConfirmInput.get())
+                if operationResult == 'success':
+                    messagebox.showinfo('Success!', 'User details updated successfully!')
+                    refreshListLambda()
+                else:
+                    messagebox.showerror('Error', operationResult)
+
                 deleteConfirmationWindow.destroy()
             else:
                 messagebox.showerror("Error", "Mismatched Username...", parent=mainframe)
@@ -47,5 +51,3 @@ def DeleteConfirmationWindow(user):
 
     # Code to prevent permanent focus steal by widgets.
     BindAllChildren(deleteConfirmationWindow, '<Button-1>', lambda e: deleteConfirmationWindow.focus_set(), bindInteractives=False)
-
-    deleteConfirmationWindow.mainloop()
