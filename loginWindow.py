@@ -61,5 +61,3 @@ def LoginWindow(welcomeNotification, loginButton, switchAccountButton, logOutBut
 
     # Code to prevent permanent focus steal by widgets.
     BindAllChildren(loginWindow, '<Button-1>', lambda e: loginWindow.focus_set(), bindInteractives=False)
-
-    loginWindow.mainloop()

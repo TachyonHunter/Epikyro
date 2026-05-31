@@ -10,7 +10,7 @@ def UserDetailsWindow(username):
     userDetailsWindow.columnconfigure(0, weight=1)
     userDetailsWindow.rowconfigure(0, weight=1)
     userDetailsWindow.title('User Details')
-    desiredWidth, desiredHeight = 570, 310
+    desiredWidth, desiredHeight = 570, 395
     userDetailsWindow.geometry(WindowSizer(userDetailsWindow, desiredWidth, desiredHeight))
 
     mainframe = ttk.Frame(userDetailsWindow, padding=8)
@@ -48,7 +48,7 @@ def UserDetailsWindow(username):
     detailFrame.grid(row=1, column=0, sticky='W')
     labelTextVars = {k: StringVar(value=f"{labelTexts[k]}{v.get()}") for k, v in details.items()}
     for i, (k, v) in enumerate(details.items()):
-        ttk.Label(detailFrame, textvariable=labelTextVars[k], style='Body.TLabel', justify='left').grid(column=0, row=i, sticky='W')
+        ttk.Label(detailFrame, textvariable=labelTextVars[k], style='Body.TLabel', justify='left').grid(column=0, row=i, sticky='W', pady=4)
 
     ttk.Button(detailFrame, text='Edit details', style='Buttons.TButton', command=ActivateEditMode).grid(column=0, row=6, sticky='W')
 
@@ -57,7 +57,7 @@ def UserDetailsWindow(username):
     editFrame.grid(row=1, column=0, sticky='W')
     for i, (k, v) in enumerate(details.items()):
         element = ttk.Frame(editFrame)
-        element.grid(row=i, column=0, sticky='W')
+        element.grid(row=i, column=0, sticky='W', pady=4)
         ttk.Label(element, text=labelTexts[k], style='Body.TLabel', justify='left').grid(column=0, row=0, sticky='W', padx=(0, 4))
         ttk.Entry(element, textvariable=v, font=('Aptos', 16)).grid(column=1, row=0, sticky='W')
 
@@ -66,5 +66,3 @@ def UserDetailsWindow(username):
 
     # Code to prevent permanent focus steal by widgets.
     BindAllChildren(userDetailsWindow, '<Button-1>', lambda e: userDetailsWindow.focus_set(), bindInteractives=False)
-
-    userDetailsWindow.mainloop()

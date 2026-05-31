@@ -7,23 +7,19 @@ from tkinter import messagebox
 import main
 
 def GetUNPWSaltFromDB(username, password):
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        # get username
+        cursor.execute("SELECT username FROM users WHERE username = ?", (username,))
+        usernameFromDB = cursor.fetchone();
 
-    # get username
-    cursor.execute("SELECT username FROM users WHERE username = ?", (username,))
-    usernameFromDB = cursor.fetchone();
+        # get the corresponding password
+        cursor.execute("SELECT hashedPassword FROM users WHERE username = ?", (username,))
+        passwordFromDB = cursor.fetchone();
 
-    # get the corresponding password
-    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
-    passwordFromDB = cursor.fetchone();
+        cursor.execute("SELECT salt FROM users WHERE username = ?", (username,))
+        salt = cursor.fetchone();
 
-    cursor.execute("SELECT salt FROM users WHERE username = ?", (username,))
-    salt = cursor.fetchone();
-
-    # close the connection
-    cursor.close()
-    conn.close()
     if usernameFromDB == None:
         return 'UNNotFound'
     else:
