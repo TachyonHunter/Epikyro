@@ -20,7 +20,7 @@ def BindAllChildren(widget, command, operationLambda, bindInteractives=True):
         for child in widget.winfo_children():
             if not isinstance(child, interactives):
                 child.bind(command, operationLambda)
-                BindAllChildren(child, command, operationLambda, False)
+            BindAllChildren(child, command, operationLambda, False)
 
 # Function to make hoverable, interactive lists.
 def HoverableListMaker(window, names, interactiveFrameLambda):
