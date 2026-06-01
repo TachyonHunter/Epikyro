@@ -26,12 +26,12 @@ class CV:
             }
         }
         try:
-            with open(f'CV/{self.name}.json', 'x') as file:
+            with open(f'CV/{name}.json', 'x') as file:
                 json.dump(CV, file)
                 return cls(CV)
         except FileExistsError:
             print("file already exists")
-            return cls.cvExisting(name)
+            return cls.CVExisting(name)
 
     def CVUpdate(self):
         with open(f'CV/{self.name}.json', 'w') as file:
