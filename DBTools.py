@@ -68,3 +68,12 @@ def AddUser(details):
         return 'success'
     except Exception as e:
         return str(e)
+
+def GetValueFromUser(username, column):
+    try:
+        with sqlite3.connect('users.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT {column} FROM users WHERE username = ?", (username,))
+            return cursor.fetchone()[0]
+    except Exception as e:
+        return str(e)

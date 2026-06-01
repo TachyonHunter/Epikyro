@@ -12,6 +12,7 @@ def SetupStyles(theme):
         sv_ttk.set_theme("dark")
         styleEngine.configure("Header/Border.TFrame",
                               background="#252525")
+
     styleEngine.configure("Buttons.TButton",
                           font=("Aptos", 16))
 
