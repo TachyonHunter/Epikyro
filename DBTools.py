@@ -4,10 +4,13 @@ from passwordFunctions import GiveHashSalt
 
 
 # Function returning a list of users from our database.
-def ListUsers():
+def ListUsers(skipAdmins=False):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT username FROM users WHERE isDeleted = 0")
+        if skipAdmins:
+            cursor.execute("SELECT username FROM users WHERE isDeleted = 0 AND designation != 'admin'")
+        else:
+            cursor.execute("SELECT username FROM users WHERE isDeleted = 0")
         users = [i[0] for i in cursor.fetchall()]
     return users
 

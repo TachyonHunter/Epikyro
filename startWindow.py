@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from loginWindow import LoginWindow
 from userEditorWindow import UserEditorWindow
+from inspectEmployeeWindow import InspectEmployeeWindow
 from styling import SetupStyles
 from fonts import LoadFont
 from GUITools import BindAllChildren
@@ -89,7 +90,7 @@ def UserEditWindowOpener():
     UserEditorWindow()
 
 def UserInspectWindowOpener():
-    pass # Temporary
+    InspectEmployeeWindow()
 
 adminFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
 adminFrame.grid(column=1, row=0, sticky='E')
