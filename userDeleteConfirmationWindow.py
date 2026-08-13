@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from DBTools import *
 from GUITools import WindowSizer, BindAllChildren
 
-def DeleteConfirmationWindow(user, refreshListLambda):
+def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     deleteConfirmationWindow = Toplevel()
     deleteConfirmationWindow.grab_set()
     deleteConfirmationWindow.focus_set()
@@ -27,10 +27,10 @@ def DeleteConfirmationWindow(user, refreshListLambda):
             if userConfirmInput.get() == user:
                 operationResult = DeleteUser(userConfirmInput.get())
                 if operationResult == 'success':
-                    messagebox.showinfo('Success!', 'User details updated successfully!')
-                    refreshListLambda()
+                    messagebox.showinfo('Success!', 'User deleted successfully!', parent=mainframe)
+                    eventHub.event_generate("<<UserDeleted>>")
                 else:
-                    messagebox.showerror('Error', operationResult)
+                    messagebox.showerror('Error', operationResult, parent=mainframe)
 
                 deleteConfirmationWindow.destroy()
             else:

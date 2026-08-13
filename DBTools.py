@@ -4,7 +4,7 @@ from passwordFunctions import GiveHashSalt
 
 
 # Function returning a list of users from our database.
-def ListUsers(skipAdmins=False):
+def ListUsers(skipAdmins: bool = False):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
         if skipAdmins:
@@ -15,7 +15,7 @@ def ListUsers(skipAdmins=False):
     return users
 
 # Function deleting a user and returning its relevant data.
-def DeleteUser(user):
+def DeleteUser(user: str):
     try:
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
@@ -25,7 +25,8 @@ def DeleteUser(user):
         return str(e)
 
 # Function retrieving user details for a given user.
-def RetrieveUserDetails(user, detailsToRetrieve = ('firstName', 'lastName', 'email', 'designation', 'DOB', 'DOJoining')):
+def RetrieveUserDetails(user: str,
+                        detailsToRetrieve: tuple = ('firstName', 'lastName', 'email', 'designation', 'DOB', 'DOJoining')):
     try:
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
@@ -38,7 +39,7 @@ def RetrieveUserDetails(user, detailsToRetrieve = ('firstName', 'lastName', 'ema
         return 'not found'
 
 # Function updating all given columns with new values for a given user.
-def UpdateUserDetails(user, details):
+def UpdateUserDetails(user: str, details: dict):
     try:
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
@@ -53,7 +54,7 @@ def UpdateUserDetails(user, details):
         return str(e)
 
 # Function to add new users to the DB.
-def AddUser(details):
+def AddUser(details: dict):
     try:
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
@@ -72,7 +73,7 @@ def AddUser(details):
     except Exception as e:
         return str(e)
 
-def GetValueFromUser(username, column):
+def GetValueFromUser(username: str, column: str):
     try:
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()

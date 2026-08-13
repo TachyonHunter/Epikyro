@@ -4,7 +4,7 @@ from GUITools import WindowSizer, BindAllChildren
 from DBTools import *
 import datetime
 
-def AddUserWindow(refreshListLambda):
+def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     addUserWindow = Toplevel()
     addUserWindow.grab_set()
     addUserWindow.focus_set()
@@ -28,10 +28,10 @@ def AddUserWindow(refreshListLambda):
     def AddUserCaller():
         operationResult = AddUser({k:v.get() for k, v in details.items()})
         if operationResult == 'success':
-            messagebox.showinfo('Success!', 'User added successfully!')
-            refreshListLambda()
+            messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
+            eventHub.event_generate("<<UserAdded>>")
         else:
-            messagebox.showerror('Error', operationResult)
+            messagebox.showerror('Error', operationResult, parent=mainframe)
         addUserWindow.destroy()
 
     for i, (k, v) in enumerate(details.items()):

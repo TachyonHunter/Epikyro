@@ -1,8 +1,11 @@
 from tkinter import *
 from tkinter import ttk
+from typing import Callable
 
 # Function to give .geometry() formatted window instructions.
-def WindowSizer(window, windowWidth, windowHeight):
+def WindowSizer(window: Toplevel | Tk,
+                windowWidth: int,
+                windowHeight: int):
     screenWidth = window.winfo_screenwidth()
     screenHeight = window.winfo_screenheight()
     x = (screenWidth // 2) - (windowWidth // 2)
@@ -10,20 +13,25 @@ def WindowSizer(window, windowWidth, windowHeight):
     return f"{windowWidth}x{windowHeight}+{x}+{y}"
 
 # Function to bind an event to all children of a widget with a given lambda.
-def BindAllChildren(widget, command, operationLambda, bindInteractives=True):
+def BindAllChildren(parent: Widget | Toplevel | Tk,
+                    event: str,
+                    operation: Callable[[Event], None],
+                    bindInteractives: bool = True):
     if bindInteractives:
-        for child in widget.winfo_children():
-            child.bind(command, operationLambda)
-            BindAllChildren(child, command, operationLambda)
+        for child in parent.winfo_children():
+            child.bind(event, operation)
+            BindAllChildren(child, event, operation)
     else:
         interactives = (ttk.Button, ttk.Entry, ttk.Scrollbar, ttk.Scale, ttk.Combobox, ttk.Checkbutton, ttk.Radiobutton)
-        for child in widget.winfo_children():
+        for child in parent.winfo_children():
             if not isinstance(child, interactives):
-                child.bind(command, operationLambda)
-            BindAllChildren(child, command, operationLambda, False)
+                child.bind(event, operation)
+            BindAllChildren(child, event, operation, False)
 
 # Function to make hoverable, interactive lists.
-def HoverableListMaker(window, names, interactiveFrameLambda):
+def HoverableListMaker(window: Toplevel | Tk | Frame | ttk.Frame,
+                       names: list | tuple,
+                       interactiveFrameOperations: Callable[[Frame | ttk.Frame, str], None]):
     # Modifiable widget that supports scrolling, etc.
     canvas = Canvas(window)
     scrollbar = ttk.Scrollbar(window, orient="vertical", command=canvas.yview)
@@ -85,7 +93,7 @@ def HoverableListMaker(window, names, interactiveFrameLambda):
         interactiveElementsFrame.grid_remove()
 
         # Lambda editing the interactive frame to add the required elements, etc.
-        interactiveFrameLambda(interactiveElementsFrame, name)
+        interactiveFrameOperations(interactiveElementsFrame, name)
 
         # Packing elements.
         elementFrame.pack(fill="both", expand=True, padx=1, pady=1)

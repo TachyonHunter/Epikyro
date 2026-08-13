@@ -1,19 +1,12 @@
-from tkinter import *
-from tkinter import ttk
-import sv_ttk
-
-root = Tk()
-root.configure(background="#000000")
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-
-sv_ttk.set_theme('dark')
-
-style = ttk.Style()
-style.configure('TButton', font=("Arial", 56), background="#252525")
-style.configure('TFrame', background="#222222")
-
-mainframe = ttk.Frame(root, style='TFrame')
-mainframe.grid(row=0, column=0, sticky="NSEW")
-ttk.Button(mainframe, text="Click me!", style='TButton').pack()
-root.mainloop()
+# welcomeNotification.set(f'Welcome {username.get()}!')
+#             loginButton.grid_remove()
+#             switchAccountButton.grid(row=0, column=0, sticky='E', padx=(0,4))
+#             logOutButton.grid(row=0, column=1, sticky='E')
+#             if GetValueFromUser(username.get(), 'designation') == 'admin':
+#                 adminFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
+#                 headerFrame.columnconfigure(1, weight=1)
+#                 generalFrame.grid_remove()
+#             else:
+#                 generalFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
+#                 headerFrame.columnconfigure(1, weight=1)
+#                 adminFrame.grid_remove()

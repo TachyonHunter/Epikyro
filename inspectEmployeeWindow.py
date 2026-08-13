@@ -22,11 +22,12 @@ def InspectEmployeeWindow():
     canvasFrame = ttk.Frame(mainframe)
     canvasFrame.grid(row=1, column=0, sticky='NSEW')
 
-    def EditInteractiveFrame(interactiveElementsFrame, username):
-        def MakeCVInspectorLambda(user):
-            return lambda: InspectOwnedCVsWindow(user)
+    def EditInteractiveFrame(interactiveElementsFrame: Frame | ttk.Frame,
+                             username: str):
 
-        ttk.Button(interactiveElementsFrame, text='Inspect owned CVs', style='Buttons.TButton', command=MakeCVInspectorLambda(username)).grid(row=0, column=0)
+        ttk.Button(interactiveElementsFrame, text='Inspect owned CVs',
+                   style='Buttons.TButton',
+                   command=lambda: InspectOwnedCVsWindow(username)).grid(row=0, column=0)
 
     interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 

@@ -1,7 +1,6 @@
 import json
 import sqlite3
 
-
 # class CVs:
 #     def __init__(self, data: dict):
 #         self.data = data
@@ -42,15 +41,18 @@ import sqlite3
 #         with open(f'CV/{self.name}.json', 'w') as file:
 #             json.dump(self.data, file)
 
-def GetExistingCV(searchQuery, column):
+def GetExistingCV(searchQuery: str, column: str):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
         cursor.execute(f'SELECT ID FROM CVs WHERE {column} = ?', (searchQuery,))
         return cursor.fetchall()
 
-def ListOwnedCVs(user):
+def ListOwnedCVs(user: str):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
         cursor.execute(f'SELECT ID, candidateName FROM CVs WHERE ownerName = ?', (user,))
         AssociatedCVs = dict(cursor.fetchall())
         return AssociatedCVs if AssociatedCVs else 'not found'
+
+def CreateNewCV(candidateName: str, ownerName: str, details: dict):
+    pass

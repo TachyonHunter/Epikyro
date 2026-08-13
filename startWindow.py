@@ -6,10 +6,12 @@ from inspectEmployeeWindow import InspectEmployeeWindow
 from styling import SetupStyles
 from fonts import LoadFont
 from GUITools import BindAllChildren
+from main import sessionStateVars, CreateEventHub
 
 # Creates root.
 LoadFont()
 root = Tk()
+eventHub = CreateEventHub(root)
 root.title('Start-up')
 root.state('zoomed')
 root.columnconfigure(0, weight=1)
@@ -46,14 +48,23 @@ ttk.Label(mainframe, text="""Team members:
 - Hussain Sameer Ulde
 - Adwaiy Chidanandan Ajay""", style="Body.TLabel", justify='left').grid(row=3, column=0, sticky='WS')
 
+account = None
+
 # The header.
 headerFrame = ttk.Frame(mainframe, style='Header/Border.TFrame', padding=5)
 headerFrame.grid(column=0, row=0, sticky='N W E S')
 headerFrame.columnconfigure(0, weight=1)
 
-# Functions for the account system.
-def LoginWindowOpener():
-    LoginWindow(welcomeNotification, loginButton, switchAccountButton, logOutButton, adminFrame, headerFrame, generalFrame)
+# Frame with all account-related buttons.
+accountFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
+accountFrame.grid(row=0, column=2)
+
+loginButton = ttk.Button(accountFrame, text='Log in',  style="Buttons.TButton", command=lambda: LoginWindow(eventHub))
+loginButton.grid(row=0, column=0, sticky='E')
+
+switchAccountButton = ttk.Button(accountFrame, text='Switch account',  style="Buttons.TButton", command=lambda: LoginWindow(eventHub))
+switchAccountButton.grid(row=0, column=0, sticky='E', padx=(0,4))
+switchAccountButton.grid_remove()
 
 def LogOut():
     logOutButton.grid_remove()
@@ -62,17 +73,6 @@ def LogOut():
     welcomeNotification.set('No user logged in...')
     generalFrame.grid_remove()
     adminFrame.grid_remove()
-
-# Frame with all account-related buttons.
-accountFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
-accountFrame.grid(row=0, column=2)
-
-loginButton = ttk.Button(accountFrame, text='Log in',  style="Buttons.TButton", command=LoginWindowOpener)
-loginButton.grid(row=0, column=0, sticky='E')
-
-switchAccountButton = ttk.Button(accountFrame, text='Switch account',  style="Buttons.TButton", command=LoginWindowOpener)
-switchAccountButton.grid(row=0, column=0, sticky='E', padx=(0,4))
-switchAccountButton.grid_remove()
 
 logOutButton = ttk.Button(accountFrame, text='Log out', style="Buttons.TButton", command=LogOut)
 logOutButton.grid(row=0, column=1)
@@ -86,17 +86,11 @@ welcomeLabel.grid(row=0, column=0, sticky='W')
 welcomeLabel.config(background = ("#f0f0f0" if mode == 'light' else "252525"))
 
 # Frame specifically for admins.
-def UserEditWindowOpener():
-    UserEditorWindow()
-
-def UserInspectWindowOpener():
-    InspectEmployeeWindow()
-
 adminFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
 adminFrame.grid(column=1, row=0, sticky='E')
 adminFrame.grid_remove()
-ttk.Button(adminFrame, text='Edit users', style="Buttons.TButton", command=UserEditWindowOpener).pack(side='left', padx=(0,4))
-ttk.Button(adminFrame, text='Inspect users', style="Buttons.TButton", command=UserInspectWindowOpener).pack(side='right', padx=(0,4))
+ttk.Button(adminFrame, text='Edit users', style="Buttons.TButton", command=lambda: UserEditorWindow(eventHub)).pack(side='left', padx=(0,4))
+ttk.Button(adminFrame, text='Inspect users', style="Buttons.TButton", command=lambda: InspectEmployeeWindow(eventHub)).pack(side='right', padx=(0,4))
 
 # Frame for general users.
 def CVManagerWindowOpener():
@@ -110,6 +104,24 @@ generalFrame.grid(column=1, row=0, sticky='N W E S')
 generalFrame.grid_remove()
 ttk.Button(generalFrame, text='Manage CVs and Candidates', style="Buttons.TButton", command=CVManagerWindowOpener).pack(side='left', padx=(0,4))
 ttk.Button(generalFrame, text='Manage Interviews', style="Buttons.TButton", command=InterviewManagerWindowOpener).pack(side='right', padx=(0,4))
+
+# Functions for the account system.
+def UpdateOnLogin(accountType):
+    welcomeNotification.set(f'Welcome {sessionStateVars['account']}!')
+    loginButton.grid_remove()
+    switchAccountButton.grid(row=0, column=0, sticky='E', padx=(0, 4))
+    logOutButton.grid(row=0, column=1, sticky='E')
+    if accountType == 'admin':
+        adminFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
+        headerFrame.columnconfigure(1, weight=1)
+        generalFrame.grid_remove()
+    else:
+        generalFrame.grid(row=0, column=1, sticky='E', padx=(0, 4))
+        headerFrame.columnconfigure(1, weight=1)
+        adminFrame.grid_remove()
+
+eventHub.bind('<<adminLogin>>', lambda e: UpdateOnLogin('admin'))
+eventHub.bind('<<normalLogin>>', lambda e: UpdateOnLogin('normal'))
 
 # Light/Dark Mode switcher.
 def SwitchMode():

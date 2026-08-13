@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import sv_ttk
 
-def SetupStyles(theme):
+def SetupStyles(theme: str):
     styleEngine = ttk.Style()
     if theme == "light":
         sv_ttk.set_theme("light")

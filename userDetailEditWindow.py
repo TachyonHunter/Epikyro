@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from GUITools import WindowSizer, BindAllChildren
 from DBTools import *
 
-def UserDetailsWindow(username):
+def UserDetailsWindow(username: str):
     userDetailsWindow = Toplevel()
     userDetailsWindow.grab_set()
     userDetailsWindow.focus_set()
@@ -35,9 +35,9 @@ def UserDetailsWindow(username):
 
         operationResult = UpdateUserDetails(username, {k: v.get() for k, v in details.items()})
         if operationResult == 'success':
-            messagebox.showinfo('Success!', 'User details updated successfully!')
+            messagebox.showinfo('Success!', 'User details updated successfully!', parent=mainframe)
         else:
-            messagebox.showerror('Error', operationResult)
+            messagebox.showerror('Error', operationResult, parent=mainframe)
 
         # For loop updating all the labels for the details.
         for k, v in RetrieveUserDetails(username).items():

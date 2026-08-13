@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 import main
 
-def GetUNPWSaltFromDB(username, password):
+def GetUNPWSaltFromDB(username: str, password: str):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
         # get username
@@ -25,7 +25,9 @@ def GetUNPWSaltFromDB(username, password):
     else:
         return usernameFromDB, passwordFromDB[0], salt[0]
 
-def Login(username, password, closerLambda):
+def Login(username: str,
+          password: str,
+          closerLambda: Callable[[bool], None]):
     DBGetOperationOutput = GetUNPWSaltFromDB(username, password)
     if DBGetOperationOutput == 'UNNotFound':
         messagebox.showerror('Error', 'Username not found...')
