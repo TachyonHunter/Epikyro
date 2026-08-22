@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from DBTools import *
-from GUITools import WindowSizer, BindAllChildren
+from GUITools import WindowSizingTask, BindAllChildren
 
 def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     deleteConfirmationWindow = Toplevel()
@@ -10,11 +10,9 @@ def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     deleteConfirmationWindow.columnconfigure(0, weight=1)
     deleteConfirmationWindow.rowconfigure(0, weight=1)
     deleteConfirmationWindow.title('Confirm Delete?')
-    desiredWidth, desiredHeight = 600, 180
-    deleteConfirmationWindow.geometry(WindowSizer(deleteConfirmationWindow, desiredWidth, desiredHeight))
 
     mainframe = ttk.Frame(deleteConfirmationWindow)
-    mainframe.grid(column=0, row=0, sticky='N W E S')
+    mainframe.grid(column=0, row=0, sticky='N W E S', padx=50, pady=4)
     mainframe.columnconfigure(0, weight=1)
     mainframe.rowconfigure(0, weight=1)
     mainframe.rowconfigure(6, weight=1)
@@ -48,6 +46,8 @@ def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     confirmButton.grid(row=2, column=0)
 
     deleteConfirmationWindow.bind('<Return>', LastBarrier)
+
+    WindowSizingTask(deleteConfirmationWindow, allowUserResizing=False)
 
     # Code to prevent permanent focus steal by widgets.
     BindAllChildren(deleteConfirmationWindow, '<Button-1>', lambda e: deleteConfirmationWindow.focus_set(), bindInteractives=False)

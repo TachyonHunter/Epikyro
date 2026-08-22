@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUITools import WindowSizer, BindAllChildren
+from GUITools import WindowSizingTask, BindAllChildren
 from DBTools import *
 
 def UserDetailsWindow(username: str):
@@ -10,8 +10,6 @@ def UserDetailsWindow(username: str):
     userDetailsWindow.columnconfigure(0, weight=1)
     userDetailsWindow.rowconfigure(0, weight=1)
     userDetailsWindow.title('User Details')
-    desiredWidth, desiredHeight = 570, 395
-    userDetailsWindow.geometry(WindowSizer(userDetailsWindow, desiredWidth, desiredHeight))
 
     mainframe = ttk.Frame(userDetailsWindow, padding=8)
     mainframe.grid(column=0, row=0, sticky='N W E S')
@@ -33,11 +31,15 @@ def UserDetailsWindow(username: str):
         editFrame.grid_remove()
         detailFrame.grid(row=1, column=0, sticky='W')
 
-        operationResult = UpdateUserDetails(username, {k: v.get() for k, v in details.items()})
-        if operationResult == 'success':
-            messagebox.showinfo('Success!', 'User details updated successfully!', parent=mainframe)
+        elementValidities = tuple(IsValueValid(k, v.get()) for k, v in details.items())
+        if all(i == 'success' for i in elementValidities):
+            operationResult = UpdateUserDetails(username, {k: v.get() for k, v in details.items()})
+            if operationResult == 'success':
+                messagebox.showinfo('Success!', 'User details updated successfully!', parent=mainframe)
+            else:
+                messagebox.showerror('Error', operationResult, parent=mainframe)
         else:
-            messagebox.showerror('Error', operationResult, parent=mainframe)
+            messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
 
         # For loop updating all the labels for the details.
         for k, v in RetrieveUserDetails(username).items():
@@ -62,6 +64,9 @@ def UserDetailsWindow(username: str):
         ttk.Entry(element, textvariable=v, font=('Aptos', 16)).grid(column=1, row=0, sticky='W')
 
     ttk.Button(editFrame, text='Save Details', style='Buttons.TButton', command=DeactivateEditMode).grid(column=0, row=6, sticky='W')
+
+    WindowSizingTask(userDetailsWindow)
+
     editFrame.grid_remove()
 
     # Code to prevent permanent focus steal by widgets.

@@ -14,12 +14,9 @@ def LoginWindow(eventHub):
     loginWindow.lift()
     loginWindow.focus_force()
 
-    desiredWidth, desiredHeight = 500, 300
-    loginWindow.geometry(WindowSizer(loginWindow, desiredWidth, desiredHeight))
-
     # Creates mainframe.
     mainframe = ttk.Frame(loginWindow)
-    mainframe.grid(column=0, row=0, sticky='N W E S')
+    mainframe.grid(column=0, row=0, sticky='N W E S', padx=50, pady=10)
     mainframe.columnconfigure(0, weight=1)
 
     # Creates the username and password entries (user-input textboxes).
@@ -53,6 +50,8 @@ def LoginWindow(eventHub):
             else:
                 eventHub.event_generate("<<normalLogin>>")
         loginWindow.destroy()
+
+    WindowSizingTask(loginWindow, allowUserResizing=False)
 
     # Code to prevent permanent focus steal by widgets.
     BindAllChildren(loginWindow, '<Button-1>', lambda e: loginWindow.focus_set(), bindInteractives=False)
