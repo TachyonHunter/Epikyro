@@ -2,15 +2,55 @@ from tkinter import *
 from tkinter import ttk
 from typing import Callable
 
-# Function to give .geometry() formatted window instructions.
-def WindowSizer(window: Toplevel | Tk,
-                windowWidth: int,
-                windowHeight: int):
+# Function to handle window sizing.
+def WindowSizingTask(window: Toplevel | Tk,
+                     allowUserResizing: bool = True):
+    window.update_idletasks()
+
+    windowWidth = window.winfo_reqwidth()
+    windowHeight = window.winfo_reqheight()
+
     screenWidth = window.winfo_screenwidth()
     screenHeight = window.winfo_screenheight()
     x = (screenWidth // 2) - (windowWidth // 2)
     y = (screenHeight // 2) - (windowHeight // 2)
-    return f"{windowWidth}x{windowHeight}+{x}+{y}"
+
+    window.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
+
+    lastRequiredWidth = None
+    lastRequiredHeight = None
+    if not allowUserResizing:
+        window.resizable(False, False)
+
+    def Resize():
+        nonlocal lastRequiredWidth, lastRequiredHeight
+        window.update_idletasks()
+
+        reqWidth = window.winfo_reqwidth()
+        reqHeight = window.winfo_reqheight()
+
+        window.minsize(reqWidth, reqHeight)
+
+        currentWidth = window.winfo_width()
+        currentHeight = window.winfo_height()
+
+        if allowUserResizing:
+            newWidth = reqWidth if reqWidth != lastRequiredWidth and currentWidth < reqWidth else currentWidth
+            newHeight = reqHeight if reqHeight != lastRequiredHeight and currentHeight < reqHeight else currentHeight
+
+        else:
+            newWidth = reqWidth if reqWidth != lastRequiredWidth else currentWidth
+            newHeight = reqHeight if reqHeight != lastRequiredHeight else currentHeight
+
+        if (newWidth, newHeight) != (currentWidth, currentHeight):
+            window.geometry(f"{newWidth}x{newHeight}")
+
+        lastRequiredWidth = reqWidth
+        lastRequiredHeight = reqHeight
+
+        window.after(200, Resize)
+
+    Resize()
 
 # Function to bind an event to all children of a widget with a given lambda.
 def BindAllChildren(parent: Widget | Toplevel | Tk,

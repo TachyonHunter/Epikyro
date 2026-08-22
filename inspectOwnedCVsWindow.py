@@ -1,17 +1,17 @@
 from tkinter import *
 from tkinter import ttk
 from CVTools import GetExistingCV, ListOwnedCVs
-from GUITools import HoverableListMaker, BindAllChildren
+from GUITools import HoverableListMaker, BindAllChildren, WindowSizingTask
 
 def InspectOwnedCVsWindow(user: str):
-    inspectOwnedCVsWindow = Toplevel()
-    inspectOwnedCVsWindow.title(f'Inspect {user}\'s owned CVs')
-    inspectOwnedCVsWindow.state('zoomed')
-    inspectOwnedCVsWindow.rowconfigure(0, weight=1)
-    inspectOwnedCVsWindow.columnconfigure(0, weight=1)
+    ownedCVInspectorWindow = Toplevel()
+    ownedCVInspectorWindow.title(f'Inspect {user}\'s owned CVs')
+    ownedCVInspectorWindow.state('zoomed')
+    ownedCVInspectorWindow.rowconfigure(0, weight=1)
+    ownedCVInspectorWindow.columnconfigure(0, weight=1)
 
     OwnedCVs = ListOwnedCVs(user)
-    mainframe = ttk.Frame(inspectOwnedCVsWindow)
+    mainframe = ttk.Frame(ownedCVInspectorWindow)
     mainframe.grid(row=0, column=0, sticky='NSEW')
     mainframe.rowconfigure(1, weight=1)
     mainframe.columnconfigure(0, weight=1)
@@ -38,5 +38,7 @@ def InspectOwnedCVsWindow(user: str):
                   justify='left',
                   style='Headings.TLabel').grid(row=0, column=0, sticky='W', padx=8)
 
+        WindowSizingTask(ownedCVInspectorWindow)
+
         # Code to prevent permanent focus steal by widgets.
-        BindAllChildren(inspectOwnedCVsWindow, '<Button-1>', lambda e: inspectOwnedCVsWindow.focus_set(), bindInteractives=False)
+        BindAllChildren(ownedCVInspectorWindow, '<Button-1>', lambda e: ownedCVInspectorWindow.focus_set(), bindInteractives=False)

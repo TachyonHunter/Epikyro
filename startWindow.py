@@ -5,7 +5,7 @@ from userEditorWindow import UserEditorWindow
 from inspectEmployeeWindow import InspectEmployeeWindow
 from styling import SetupStyles
 from fonts import LoadFont
-from GUITools import BindAllChildren
+from GUITools import BindAllChildren, WindowSizingTask
 from main import sessionStateVars, CreateEventHub
 
 # Creates root.
@@ -135,6 +135,8 @@ def SwitchMode():
     welcomeLabel.config(background=("#f0f0f0" if mode == 'light' else "#252525"))
 
 ttk.Button(headerFrame, text='Light/Dark Mode', style="Buttons.TButton", command=SwitchMode).grid(row=0, column=3, sticky='E', padx=8)
+
+WindowSizingTask(root)
 
 # Code to prevent permanent focus steal by widgets.
 BindAllChildren(root, '<Button-1>', lambda e: root.focus_set(), bindInteractives=False)
