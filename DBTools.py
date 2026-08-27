@@ -123,7 +123,9 @@ def IsValueValid(valueType: str, value) -> str:
                        'name',
                        'designation',
                        'nationality',
-                       'gender'):
+                       'gender',
+                       'candidateName',
+                       'ownerName'):
         if not value.isalpha():
             return f'Invalid value provided for {valueType}.'
     elif valueType == 'email':
@@ -146,7 +148,12 @@ def IsValueValid(valueType: str, value) -> str:
     elif valueType == 'phoneNo':
         if value.isdigit() and len(value) == 10:
             return 'Invalid phone number.'
-    elif valueType in ('eduQualifications', 'workExperience', 'miscAchievements', 'skills', 'languages', 'references'):
+    elif valueType in ('eduQualifications',
+                       'workExperience',
+                       'miscAchievements',
+                       'skills',
+                       'languages',
+                       'references'):
         if not(isinstance(value, tuple) and all(isinstance(i, str) for i in value)):
             return f'Invalid value provided for {valueType}.'
     return 'success' # If checks passed.
