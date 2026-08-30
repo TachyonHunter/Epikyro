@@ -16,13 +16,10 @@ def ListUsers(skipAdmins: bool = False):
 
 # Function deleting a user and returning its relevant data.
 def DeleteUser(user: str):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"UPDATE users SET isDeleted = TRUE WHERE username = ?", (user,))
-        return 'success'
-    except Exception as e:
-        return str(e)
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE users SET isDeleted = TRUE WHERE username = ?", (user,))
+    return 'success'
 
 # Function retrieving user details for a given user.
 def RetrieveUserDetails(user: str,
@@ -35,52 +32,42 @@ def RetrieveUserDetails(user: str,
             userDetails = dict(zip(detailsToRetrieve, cursor.fetchone()))
         return userDetails
     except TypeError:
-        print("User not found")
-        return 'not found'
+        raise ValueError('User not found?')
 
 # Function updating all given columns with new values for a given user.
 def UpdateUserDetails(user: str, details: dict):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
-            setClause = ", ".join(f"{k} = ?" for k in details.keys())
-            cursor.execute(f"""
-                           UPDATE users
-                           SET {setClause}
-                           WHERE username = ?
-                           """, tuple(v for v in details.values())+(user,))
-        return 'success'
-    except Exception as e:
-        return str(e)
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        setClause = ", ".join(f"{k} = ?" for k in details.keys())
+        cursor.execute(f"""
+                       UPDATE users
+                       SET {setClause}
+                       WHERE username = ?
+                       """, tuple(v for v in details.values())+(user,))
+    return 'success'
 
 # Function to add new users to the DB.
 def AddUser(details: dict):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
 
-            password = details['password']
-            hashedPassword, salt = GiveHashSalt(password)
-            del details['password']
-            details['hashedPassword'] = hashedPassword
-            details['salt'] = salt
-            details['isDeleted'] = False
+        password = details['password']
+        hashedPassword, salt = GiveHashSalt(password)
+        del details['password']
+        details['hashedPassword'] = hashedPassword
+        details['salt'] = salt
+        details['isDeleted'] = False
 
-            columns = ', '.join(details.keys())
-            valuePlaceholders = ', '.join('?' for _ in details.keys())
-            cursor.execute(f'INSERT INTO users ({columns}) VALUES ({valuePlaceholders})', tuple(details.values()))
-        return 'success'
-    except Exception as e:
-        return str(e)
+        columns = ', '.join(details.keys())
+        valuePlaceholders = ', '.join('?' for _ in details.keys())
+        cursor.execute(f'INSERT INTO users ({columns}) VALUES ({valuePlaceholders})', tuple(details.values()))
+    return 'success'
 
 def GetValueFromUser(username: str, column: str):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"SELECT {column} FROM users WHERE username = ?", (username,))
-            return cursor.fetchone()[0]
-    except Exception as e:
-        return str(e)
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT {column} FROM users WHERE username = ?", (username,))
+        return cursor.fetchone()[0]
 
 def IsValueValid(valueType: str, value) -> str:
     supportedTypes = ('username',
@@ -101,13 +88,15 @@ def IsValueValid(valueType: str, value) -> str:
                       'miscAchievements',
                       'skills',
                       'languages',
-                      'references')
+                      'references',
+                      'ID',
+                      'owner')
 
     # Below code handles invalidity.
     if valueType not in supportedTypes:
-        return 'Unsupported.'
+        return f'{valueType} unsupported.'
     elif valueType in ('username', 'address'):
-        if not value.isalnum():
+        if not isinstance(value, str):
             return f'Invalid value provided for {valueType}.'
     elif valueType == 'password':
         if not (
@@ -124,9 +113,8 @@ def IsValueValid(valueType: str, value) -> str:
                        'designation',
                        'nationality',
                        'gender',
-                       'candidateName',
-                       'ownerName'):
-        if not value.isalpha():
+                       'owner'):
+        if not all(i.isalpha() or i.isspace() for i in value):
             return f'Invalid value provided for {valueType}.'
     elif valueType == 'email':
         user, sep, domain = value.partition('@')
@@ -146,7 +134,7 @@ def IsValueValid(valueType: str, value) -> str:
         except ValueError:
             return f'Invalid date provided for {valueType}.'
     elif valueType == 'phoneNo':
-        if value.isdigit() and len(value) == 10:
+        if not(value.isdigit() and len(value) == 10):
             return 'Invalid phone number.'
     elif valueType in ('eduQualifications',
                        'workExperience',
@@ -156,4 +144,7 @@ def IsValueValid(valueType: str, value) -> str:
                        'references'):
         if not(isinstance(value, tuple) and all(isinstance(i, str) for i in value)):
             return f'Invalid value provided for {valueType}.'
+    elif valueType == 'ID':
+        if not(isinstance(value, int)):
+            return f'INVALID ID.'
     return 'success' # If checks passed.

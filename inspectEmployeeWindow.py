@@ -1,9 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+
+from CVManagerWindow import CVManagerWindow
 from CVTools import GetExistingCV
 from DBTools import ListUsers
 from GUITools import HoverableListMaker, BindAllChildren, WindowSizingTask
-from inspectOwnedCVsWindow import InspectOwnedCVsWindow
 
 def InspectEmployeeWindow():
     inspectEmployeeWindow = Toplevel()
@@ -27,7 +28,7 @@ def InspectEmployeeWindow():
 
         ttk.Button(interactiveElementsFrame, text='Inspect owned CVs',
                    style='Buttons.TButton',
-                   command=lambda: InspectOwnedCVsWindow(username)).grid(row=0, column=0)
+                   command=lambda: CVManagerWindow(username, mode='view')).grid(row=0, column=0)
 
     interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 

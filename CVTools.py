@@ -1,35 +1,28 @@
 import json
 import sqlite3
-import pathlib
 from DBTools import IsValueValid
 from main import projectRootFolder
 
-def GetExistingCV(searchQuery: str, column: str):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(f'SELECT fileName FROM CVs WHERE {column} = ?', (searchQuery,))
-            fileName = cursor.fetchone()[0]
-            filePath = projectRootFolder / "CVs" / fileName
+def GetExistingCV(searchQuery, column: str = 'ID'):
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute(f'SELECT fileName FROM CVs WHERE {column} = ?', (searchQuery,))
+        fileName = cursor.fetchone()[0]
+        filePath = projectRootFolder / "CVs" / fileName
 
-        with filePath.open('r') as fileHandler:
-            details = json.load(fileHandler)
+    with filePath.open('r') as fileHandler:
+        details = json.load(fileHandler)
 
-        return details
-    except Exception as e:
-        return str(e)
+    return details
 
 def ListOwnedCVs(user: str):
-    try:
-        with sqlite3.connect('users.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT ID, candidateName FROM CVs WHERE ownerName = ? AND isDeleted = FALSE', (user,))
-            AssociatedCVs = dict(cursor.fetchall())
-            return AssociatedCVs if AssociatedCVs else 'not found'
-    except Exception as e:
-        return str(e)
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT ID, candidateName FROM CVs WHERE ownerName = ? AND isDeleted = FALSE', (user,))
+        AssociatedCVs = dict(cursor.fetchall())
+        return AssociatedCVs if AssociatedCVs else 'not found'
 
-def CreateNewCV(candidateName: str, ownerName: str, details: dict):
+def CreateNewCV(ownerName: str, details: dict):
     requiredKeys = ('name',
                  'address',
                  'phoneNo',
@@ -46,14 +39,13 @@ def CreateNewCV(candidateName: str, ownerName: str, details: dict):
         IsValueValid(k, v)
         for k, v in details.items()
     ) + (
-        IsValueValid('candidateName', ownerName),
-        IsValueValid('ownerName', candidateName)
+        IsValueValid('owner', ownerName),
     )
+    candidateName = details['name']
 
     if (all(i == 'success' for i in elementValidities)
         and all(key in details for key in requiredKeys)):
 
-        try:
             with sqlite3.connect('users.db') as conn:
                 cursor = conn.cursor()
                 cursor.execute('INSERT INTO CVs (candidateName, ownerName) VALUES (?, ?)',
@@ -63,7 +55,7 @@ def CreateNewCV(candidateName: str, ownerName: str, details: dict):
                 if ID is None:
                     return 'fatal error'
 
-                details['ID'] = ID
+                details = {'ID':ID, 'owner':ownerName, **details}
 
                 formattedName = candidateName.replace(' ', '_')
                 fileName = f'{ID:05d}-{formattedName}.json'
@@ -75,14 +67,13 @@ def CreateNewCV(candidateName: str, ownerName: str, details: dict):
                 json.dump(details, fileHandler, indent=4)
 
             return 'success'
-        except Exception as e:
-            return str(e)
 
     else:
-        return 'invalid value'
+        raise ValueError('\n'.join(i for i in elementValidities if i != 'success'))
 
 def UpdateExistingCV(details: dict):
-    requiredKeys = ('name',
+    requiredKeys = ('owner',
+                    'name',
                     'address',
                     'phoneNo',
                     'nationality',
@@ -99,44 +90,58 @@ def UpdateExistingCV(details: dict):
     if (all(i == 'success' for i in elementValidities)
         and all(key in details for key in requiredKeys)):
 
-        try:
-            ID = details['ID']
-            with sqlite3.connect('users.db') as conn:
-                cursor = conn.cursor()
-                cursor.execute('SELECT fileName FROM CVs WHERE ID = ?', (ID,))
-                fileName = cursor.fetchone()[0]
-                filePath = projectRootFolder / "CVs" / fileName
-
-            with filePath.open('w') as fileHandler:
-                json.dump(details, fileHandler, indent=4)
-
-            return 'success'
-        except Exception as e:
-            return str(e)
-
-    else:
-        return 'invalid value'
-
-def DeleteCV(ID: int):
-    try:
+        ID = details['ID']
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT fileName FROM CVs WHERE ID = ?', (ID,))
-            result = cursor.fetchone()
-            if result is None:
-                return 'not found'
+            fileName = cursor.fetchone()[0]
+            filePath = projectRootFolder / "CVs" / fileName
 
-            fileName = result[0]
+        with filePath.open('w') as fileHandler:
+            json.dump(details, fileHandler, indent=4)
 
-            CVFolder = projectRootFolder / "CVs"
-            DeletedCVsFolder = CVFolder / "Recently Deleted"
+        return 'success'
 
-            CVPath = CVFolder / fileName
-            deletedPath = DeletedCVsFolder / fileName
+    else:
+        raise ValueError('\n'.join(i for i in elementValidities if i != 'success'))
 
-            CVPath.rename(deletedPath)
+def DeleteCV(ID: int):
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT fileName FROM CVs WHERE ID = ?', (ID,))
+        result = cursor.fetchone()
+        if result is None:
+            raise ValueError('CV not found?')
 
-            cursor.execute('UPDATE CVs SET isDeleted = TRUE WHERE ID = ?', (ID,))
+        fileName = result[0]
 
-    except Exception as e:
-        return str(e)
+        CVFolder = projectRootFolder / "CVs"
+        DeletedCVsFolder = CVFolder / "Recently Deleted"
+
+        CVPath = CVFolder / fileName
+        deletedPath = DeletedCVsFolder / fileName
+
+        CVPath.rename(deletedPath)
+
+        cursor.execute('UPDATE CVs SET isDeleted = TRUE WHERE ID = ?', (ID,))
+
+# details = {
+#     'name': 'CNO IZECE',
+#     'address': '314P, 15th Street, Dubai',
+#     'phoneNo': '3141592653',
+#     'nationality': 'Indian',
+#     'gender': 'Male',
+#     'eduQualifications': ('12 - CBSE - 2026',
+#                           'BSc - ??? - 2030',
+#                           'MSc - ??? - 2032',
+#                           'PhD - MIT - 2040',),
+#     'workExperience': ('NA',),
+#     'miscAchievements': ('NA',),
+#     'skills': ('NA',),
+#     'languages': ('English',
+#                   'French',
+#                   'Malayalam'),
+#     'references': ('NA',)
+# }
+#
+# CreateNewCV('tempUser', details)
