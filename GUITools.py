@@ -142,3 +142,30 @@ def HoverableListMaker(window: Toplevel | Tk | Frame | ttk.Frame,
         # Binding mouse enter and leave events.
         BindAllChildren(borderFrame, "<Enter>", MakeEnterLambda(elementFrame))
         BindAllChildren(borderFrame, "<Leave>", MakeLeaveLambda(elementFrame))
+
+def DropdownListMaker(container, listTitle, elements, mode='edit'):
+    dropdownListFrame = ttk.Frame(container, padding=8)
+    dropdownListFrame.grid(row=0, column=0, sticky="NSEW")
+    dropdownListFrame.columnconfigure(0, weight=1)
+
+    listElementsFrame = ttk.Frame(dropdownListFrame)
+    listElementsFrame.grid(row=1, column=0, sticky="NSEW")
+    listElementsFrame.grid_remove()
+
+    buttonText = StringVar()
+    buttonText.set('▶')
+
+    def ToggleList():
+        listElementsFrame.grid(row=1, column=0, sticky="NSEW")
+        buttonText.set('▼')
+
+    ttk.Label(dropdownListFrame, text=listTitle).grid(column=0, row=0, sticky="W")
+    visibilityButton = ttk.Button(dropdownListFrame, textvariable=buttonText, command=ToggleList)
+    visibilityButton.grid(column=1, row=0, sticky="W")
+
+    if mode == 'view':
+        for i in elements:
+            ttk.Label(listElementsFrame, text=i).grid(column=0, row=i, sticky="W")
+    elif mode == 'edit':
+        for i in elements:
+            pass
