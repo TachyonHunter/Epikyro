@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUITools import WindowSizingTask, BindAllChildren
+from GUITools import WindowSizingTask, BindFamily
 from DBTools import *
 from datetime import datetime
 
@@ -64,12 +64,12 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
             passwordRulesFrame.pack(anchor='w')
             passwordRulesFrame.pack_forget()
 
-            BindAllChildren(element, "<FocusIn>", lambda e: passwordRulesFrame.pack(side='bottom', anchor='w'))
-            BindAllChildren(element, "<FocusOut>", lambda e: passwordRulesFrame.pack_forget())
+            BindFamily(element, "<FocusIn>", lambda e: passwordRulesFrame.pack(side='bottom', anchor='w'))
+            BindFamily(element, "<FocusOut>", lambda e: passwordRulesFrame.pack_forget())
 
     ttk.Button(mainframe, text='Confirm', style='Buttons.TButton', command=AddUserCaller).grid(column=0, row=9, sticky='W')
 
     WindowSizingTask(addUserWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindAllChildren(addUserWindow, '<Button-1>', lambda e: addUserWindow.focus_set(), bindInteractives=False)
+    BindFamily(addUserWindow, '<Button-1>', lambda e: addUserWindow.focus_set(), bindInteractives=False)

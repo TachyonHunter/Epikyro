@@ -6,8 +6,9 @@ from inspectEmployeeWindow import InspectEmployeeWindow
 from CVManagerWindow import CVManagerWindow
 from styling import SetupStyles
 from fonts import LoadFont
-from GUITools import BindAllChildren, WindowSizingTask
+from GUITools import BindFamily, WindowSizingTask
 from main import sessionStateVars, CreateEventHub
+from ttk_text import ThemedText
 
 # Creates root.
 LoadFont()
@@ -140,6 +141,6 @@ ttk.Button(headerFrame, text='Light/Dark Mode', style="Buttons.TButton", command
 WindowSizingTask(root)
 
 # Code to prevent permanent focus steal by widgets.
-BindAllChildren(root, '<Button-1>', lambda e: root.focus_set(), bindInteractives=False)
+BindFamily(root, '<Button-1>', lambda e: root.focus_set(), bindInteractives=False)
 
 root.mainloop()

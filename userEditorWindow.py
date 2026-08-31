@@ -3,7 +3,7 @@ from tkinter import ttk
 from GUITools import HoverableListMaker, WindowSizingTask
 from login import *
 from DBTools import *
-from GUITools import BindAllChildren
+from GUITools import BindFamily
 from userDeleteConfirmationWindow import DeleteConfirmationWindow
 from userAddWindow import AddUserWindow
 from userDetailEditWindow import UserDetailsWindow
@@ -58,7 +58,7 @@ def UserEditorWindow(eventHub):
     WindowSizingTask(userEditWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindAllChildren(userEditWindow, '<Button-1>', lambda e: userEditWindow.focus_set(), bindInteractives=False)
+    BindFamily(userEditWindow, '<Button-1>', lambda e: userEditWindow.focus_set(), bindInteractives=False)
 
     eventHub.bind('<<UserDeleted>>', lambda e: RefreshUserList(eventHub))
     eventHub.bind('<<UserAdded>>', lambda e: RefreshUserList(eventHub))

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from typing import Callable
+from ttk_text import ThemedText
 
 # Function to handle window sizing.
 def WindowSizingTask(window: Toplevel | Tk,
@@ -52,29 +53,31 @@ def WindowSizingTask(window: Toplevel | Tk,
 
     Resize()
 
-# Function to bind an event to all children of a widget with a given lambda.
-def BindAllChildren(parent: Widget | Toplevel | Tk,
-                    event: str,
-                    operation: Callable[[Event], None],
-                    bindInteractives: bool = True):
+# Function to bind an event to all members of a widget tree with a given lambda.
+def BindFamily(parent: Widget | Toplevel | Tk,
+               event: str,
+               operation: Callable[[Event], None],
+               bindInteractives: bool = True):
     if bindInteractives:
+        parent.bind(event, operation)
         for child in parent.winfo_children():
             child.bind(event, operation)
-            BindAllChildren(child, event, operation)
+            BindFamily(child, event, operation)
     else:
         interactives = (ttk.Button, ttk.Entry, ttk.Scrollbar, ttk.Scale, ttk.Combobox, ttk.Checkbutton, ttk.Radiobutton)
+        parent.bind(event, operation)
         for child in parent.winfo_children():
             if not isinstance(child, interactives):
                 child.bind(event, operation)
-            BindAllChildren(child, event, operation, False)
+            BindFamily(child, event, operation, False)
 
 # Function to make hoverable, interactive lists.
-def HoverableListMaker(window: Toplevel | Tk | Frame | ttk.Frame,
+def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
                        names: list | tuple,
                        interactiveFrameOperations: Callable[[Frame | ttk.Frame, str], None]):
     # Modifiable widget that supports scrolling, etc.
-    canvas = Canvas(window)
-    scrollbar = ttk.Scrollbar(window, orient="vertical", command=canvas.yview)
+    canvas = Canvas(container)
+    scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
     scrollableFrame = ttk.Frame(canvas, padding=5)  # The frame to scroll through.
     scrollableFrame.bind(
         "<Configure>",
@@ -90,30 +93,6 @@ def HoverableListMaker(window: Toplevel | Tk | Frame | ttk.Frame,
     canvas.configure(yscrollcommand=scrollbar.set)
     canvas.pack(side="left", fill="both", expand=True, padx=5, pady=5)
     scrollbar.pack(side="right", fill="y", padx=5, pady=5)
-
-    # Defining actions to perform on hovers, etc.
-    def MakeEnterLambda(frame):
-        return lambda e: OnEnter(frame)
-
-    def MakeLeaveLambda(frame):
-        return lambda e: OnLeave(frame)
-
-    def OnEnter(frame):
-        frame.hovered = True
-        for child in frame.winfo_children():
-            if isinstance(child, ttk.Frame):
-                child.grid(column=1, row=0, sticky="NSE")
-
-    def OnLeave(frame):
-        frame.hovered = False
-
-        def Check():
-            if not frame.hovered:
-                for child in frame.winfo_children():
-                    if isinstance(child, ttk.Frame):
-                        child.grid_remove()
-
-        frame.after(50, Check)
 
     # Creating a sub-frame for every user.
     for name in names:
@@ -140,5 +119,143 @@ def HoverableListMaker(window: Toplevel | Tk | Frame | ttk.Frame,
         borderFrame.pack(fill="x", pady=5)
 
         # Binding mouse enter and leave events.
-        BindAllChildren(borderFrame, "<Enter>", MakeEnterLambda(elementFrame))
-        BindAllChildren(borderFrame, "<Leave>", MakeLeaveLambda(elementFrame))
+        def BindHover(elementFrame):
+            hovered = False
+
+            def OnEnter(event):
+                nonlocal hovered
+                hovered = True
+
+                for child in elementFrame.winfo_children():
+                    if isinstance(child, ttk.Frame):
+                        child.grid(column=1, row=0, sticky="NSE")
+
+            def OnLeave(event):
+                nonlocal hovered
+                hovered = False
+
+                def Check():
+                    if not hovered:
+                        for child in elementFrame.winfo_children():
+                            if isinstance(child, ttk.Frame):
+                                child.grid_remove()
+
+                elementFrame.after(50, Check)
+
+            BindFamily(elementFrame, "<Enter>", OnEnter)
+            BindFamily(elementFrame, "<Leave>", OnLeave)
+
+        BindHover(elementFrame)
+
+
+def DropdownListMaker(container, listTitle, elements, mode='edit'):
+    dropdownListFrame = ttk.Frame(container, padding=8)
+    dropdownListFrame.grid(row=0, column=0, sticky="NSEW")
+    dropdownListFrame.columnconfigure(0, weight=1)
+
+    listElementsFrame = ttk.Frame(dropdownListFrame)
+    listElementsFrame.grid(row=1, column=0, sticky="NSEW")
+    listElementsFrame.grid_remove()
+
+    listIsHidden = True
+    buttonText = StringVar()
+    buttonText.set('▶')
+
+    def ToggleList():
+        if listIsHidden:
+            listElementsFrame.grid(row=1, column=0, sticky="NSEW")
+            buttonText.set('▼')
+        else:
+            listElementsFrame.grid_remove()
+            buttonText.set('▶')
+
+    ttk.Label(dropdownListFrame, text=listTitle).grid(column=0, row=0, sticky="W")
+    visibilityButton = ttk.Button(dropdownListFrame, textvariable=buttonText, command=ToggleList)
+    visibilityButton.grid(column=1, row=0, sticky="W")
+
+    if mode == 'view':
+        for i in elements:
+            ttk.Label(listElementsFrame, text=i).grid(column=0, row=i, sticky="W")
+    elif mode == 'edit':
+        for i in elements:
+            pass
+
+
+def LabelledListMaker(container, fields, mode='edit', valueHandler=None): # Labels need to have the colon and space.
+    if mode == 'edit' and valueHandler is None:
+        raise TypeError('LabelledListMaker() is missing required argument valueHandler while in edit mode.')
+
+    if not all(field.get('label') and field.get('value') for field in fields):
+        raise ValueError('Both labels and values are mandatory for every field.')
+
+    labelledListFrame = ttk.Frame(container, padding=8)
+    labelledListFrame.grid(row=0, column=0, sticky="NSEW")
+
+    viewElementsFrame = ttk.Frame(labelledListFrame)
+    viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
+
+    labelVars = []
+
+    for key, fieldDefinition in fields:
+        label = fieldDefinition['label']
+        value = fieldDefinition['value']
+
+        labelVar = StringVar()
+        labelVar.set(f'{label}{value}')
+        labelVars.append(labelVar)
+        ttk.Label(viewElementsFrame, textvariable=labelVar, style='Body.TLabel').pack(anchor='w', pady=5)
+
+    if mode == 'edit':
+        editElementsFrame = ttk.Frame(labelledListFrame)
+        editElementsFrame.grid(row=0, column=0, sticky="NSEW")
+        editElementsFrame.grid_remove()
+
+        entryVars = []
+
+        for key, fieldDefinition in fields:
+            label = fieldDefinition['label']
+            value = fieldDefinition['value']
+
+            elementFrame = ttk.Frame(editElementsFrame)
+            ttk.Label(elementFrame,
+                      text=f'{label}',
+                      style='Body.TLabel').grid(row=0, column=0, sticky="W")
+
+            entryVar = StringVar()
+            entryVars.append(entryVar)
+            entryVar.set(f'{value}')
+
+            ttk.Entry(elementFrame,
+                      textvariable=entryVar,
+                      font=('Aptos', 16)).grid(column=1, row=0, sticky='W')
+
+            elementFrame.pack(anchor='w', pady=5)
+
+        buttonText = StringVar()
+        buttonText.set('Edit')
+
+        currentMode = 'view'
+
+        def ToggleListMode():
+            nonlocal currentMode
+
+            if currentMode == 'view':
+                buttonText.set('Submit')
+                editElementsFrame.grid(row=0, column=0, sticky="NSEW")
+                viewElementsFrame.grid_remove()
+                currentMode = 'edit'
+            else:
+                buttonText.set('Edit')
+                viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
+                editElementsFrame.grid_remove()
+                for labelVar, label, entryVar in zip(labelVars, labels, entryVars):
+                    labelVar.set(f'{label}{entryVar.get()}')
+                valueHandler(i.get() for i in entryVars)
+                currentMode = 'view'
+
+        ttk.Button(labelledListFrame,
+                   textvariable=buttonText,
+                   command=ToggleListMode,
+                   style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3,0))
+
+        BindFamily(container, '<Return>', lambda e: ToggleListMode())

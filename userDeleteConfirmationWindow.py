@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from DBTools import *
-from GUITools import WindowSizingTask, BindAllChildren
+from GUITools import WindowSizingTask, BindFamily
 
 def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     deleteConfirmationWindow = Toplevel()
@@ -50,4 +50,4 @@ def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     WindowSizingTask(deleteConfirmationWindow, allowUserResizing=False)
 
     # Code to prevent permanent focus steal by widgets.
-    BindAllChildren(deleteConfirmationWindow, '<Button-1>', lambda e: deleteConfirmationWindow.focus_set(), bindInteractives=False)
+    BindFamily(deleteConfirmationWindow, '<Button-1>', lambda e: deleteConfirmationWindow.focus_set(), bindInteractives=False)

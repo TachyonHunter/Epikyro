@@ -4,7 +4,7 @@ from tkinter import ttk
 from CVManagerWindow import CVManagerWindow
 from CVTools import GetExistingCV
 from DBTools import ListUsers
-from GUITools import HoverableListMaker, BindAllChildren, WindowSizingTask
+from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 
 def InspectEmployeeWindow():
     inspectEmployeeWindow = Toplevel()
@@ -40,4 +40,4 @@ def InspectEmployeeWindow():
     WindowSizingTask(inspectEmployeeWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindAllChildren(inspectEmployeeWindow, '<Button-1>', lambda e: inspectEmployeeWindow.focus_set(), bindInteractives=False)
+    BindFamily(inspectEmployeeWindow, '<Button-1>', lambda e: inspectEmployeeWindow.focus_set(), bindInteractives=False)

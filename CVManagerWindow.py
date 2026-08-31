@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from CVTools import ListOwnedCVs
-from GUITools import HoverableListMaker, BindAllChildren, WindowSizingTask
+from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 from CVEditorWindow import CVEditorWindow
 
 def CVManagerWindow(user: str, mode: str = 'edit'):
@@ -47,4 +47,4 @@ def CVManagerWindow(user: str, mode: str = 'edit'):
         WindowSizingTask(CVManagerWindow)
 
         # Code to prevent permanent focus steal by widgets.
-        BindAllChildren(CVManagerWindow, '<Button-1>', lambda e: CVManagerWindow.focus_set(), bindInteractives=False)
+        BindFamily(CVManagerWindow, '<Button-1>', lambda e: CVManagerWindow.focus_set(), bindInteractives=False)

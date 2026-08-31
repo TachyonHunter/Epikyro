@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUITools import WindowSizingTask, BindAllChildren
+from GUITools import WindowSizingTask, BindFamily
 from CVTools import *
 from DBTools import IsValueValid
 
@@ -59,4 +59,4 @@ def CVEditorWindow(mode, ID: int | None = None):
     WindowSizingTask(CVEditorWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindAllChildren(CVEditorWindow, '<Button-1>', lambda e: CVEditorWindow.focus_set(), bindInteractives=False)
+    BindFamily(CVEditorWindow, '<Button-1>', lambda e: CVEditorWindow.focus_set(), bindInteractives=False)

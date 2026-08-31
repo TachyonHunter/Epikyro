@@ -1,7 +1,7 @@
 # from tkinter import *
 # from tkinter import ttk
 # from CVTools import GetExistingCV, ListOwnedCVs
-# from GUITools import HoverableListMaker, BindAllChildren, WindowSizingTask
+# from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 #
 # def InspectOwnedCVsWindow(user: str):
 #     ownedCVInspectorWindow = Toplevel()
@@ -41,4 +41,4 @@
 #         WindowSizingTask(ownedCVInspectorWindow)
 #
 #         # Code to prevent permanent focus steal by widgets.
-#         BindAllChildren(ownedCVInspectorWindow, '<Button-1>', lambda e: ownedCVInspectorWindow.focus_set(), bindInteractives=False)
+#         BindFamily(ownedCVInspectorWindow, '<Button-1>', lambda e: ownedCVInspectorWindow.focus_set(), bindInteractives=False)
