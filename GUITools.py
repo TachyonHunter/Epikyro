@@ -181,7 +181,7 @@ def DropdownListMaker(container, listTitle, elements, mode='edit'):
             pass
 
 
-def LabelledListMaker(container, fields, mode='edit', valueHandler=None): # Labels need to have the colon and space.
+def LabelledListMaker(container, fields, mode, valueHandler=None): # Labels need to have the colon and space.
     if mode == 'edit' and valueHandler is None:
         raise TypeError('LabelledListMaker() is missing required argument valueHandler while in edit mode.')
 
@@ -194,15 +194,13 @@ def LabelledListMaker(container, fields, mode='edit', valueHandler=None): # Labe
     viewElementsFrame = ttk.Frame(labelledListFrame)
     viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
 
-    labelVars = []
-
     for key, fieldDefinition in fields:
         label = fieldDefinition['label']
         value = fieldDefinition['value']
 
         labelVar = StringVar()
         labelVar.set(f'{label}{value}')
-        labelVars.append(labelVar)
+        fields[key]['labelVar'] = labelVar
         ttk.Label(viewElementsFrame, textvariable=labelVar, style='Body.TLabel').pack(anchor='w', pady=5)
 
     if mode == 'edit':
@@ -210,26 +208,68 @@ def LabelledListMaker(container, fields, mode='edit', valueHandler=None): # Labe
         editElementsFrame.grid(row=0, column=0, sticky="NSEW")
         editElementsFrame.grid_remove()
 
-        entryVars = []
+        def TipCreator(elementFrame, tipDeclaration):
+            tipObject = tipDeclaration(elementFrame)
+            tipObject.pack(side='bottom', anchor='nw')
+            tipObject.pack_forget()
+
+            BindFamily(elementFrame,
+                       '<FocusIn>',
+                       lambda e: tipObject.pack(side='bottom', anchor='w'))
+            BindFamily(elementFrame,
+                       "<FocusOut>",
+                       lambda e: tipObject.pack_forget())
 
         for key, fieldDefinition in fields:
             label = fieldDefinition['label']
             value = fieldDefinition['value']
+            tipDeclaration = fieldDefinition.get('tip')
+            elementType = fieldDefinition.get('elementType')
 
             elementFrame = ttk.Frame(editElementsFrame)
-            ttk.Label(elementFrame,
-                      text=f'{label}',
-                      style='Body.TLabel').grid(row=0, column=0, sticky="W")
+            if elementType == 'single-line' or elementType is None:
+                ttk.Label(elementFrame,
+                          text=f'{label}',
+                          style='Body.TLabel',
+                          justify='left').pack(side='left', anchor='nw')
 
-            entryVar = StringVar()
-            entryVars.append(entryVar)
-            entryVar.set(f'{value}')
+                entryVar = StringVar()
+                fields['key']['inputHub'] = entryVar
+                entryVar.set(f'{value}')
 
-            ttk.Entry(elementFrame,
-                      textvariable=entryVar,
-                      font=('Aptos', 16)).grid(column=1, row=0, sticky='W')
+                ttk.Entry(elementFrame,
+                          textvariable=entryVar,
+                          font=('Aptos', 16)).pack(side='right', anchor='nw')
 
-            elementFrame.pack(anchor='w', pady=5)
+                if tipDeclaration is not None:
+                    TipCreator(elementFrame, tipDeclaration)
+
+                elementFrame.pack(anchor='w', pady=5)
+
+            elif elementType == 'multi-line':
+                ttk.Label(elementFrame,
+                          text=f'{label}',
+                          style='Body.TLabel',
+                          justify='left').pack(side='left', anchor='nw')
+
+                textBoxFrame = ttk.Frame(editElementsFrame)
+                textBoxFrame.pack(side='left', anchor='nw')
+
+                textBox = ThemedText(elementFrame, width=70, height=20)
+                scrollbar = ttk.Scrollbar(textBoxFrame, orient="vertical", command=textBox.yview)
+
+                textBox.configure(yscrollcommand=scrollbar.set)
+
+                textBox.pack(side="left", fill="both", expand=True)
+                scrollbar.pack(side="right", fill="y")
+
+                fields['key']['inputHub'] = textBox
+                textBox.insert('1.0', f'{value}')
+
+                if tipDeclaration is not None:
+                    TipCreator(elementFrame, tipDeclaration)
+
+                elementFrame.pack(anchor='w', pady=5)
 
         buttonText = StringVar()
         buttonText.set('Edit')
@@ -248,14 +288,36 @@ def LabelledListMaker(container, fields, mode='edit', valueHandler=None): # Labe
                 buttonText.set('Edit')
                 viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
                 editElementsFrame.grid_remove()
-                for labelVar, label, entryVar in zip(labelVars, labels, entryVars):
-                    labelVar.set(f'{label}{entryVar.get()}')
-                valueHandler(i.get() for i in entryVars)
-                currentMode = 'view'
+                details = {}
+                for key, fieldDefinition in fields:
+                    fieldType = fieldDefinition.get('type')
+                    inputHub = fieldDefinition.get('inputHub')
+                    if fieldType == 'single-line':
+                        details[key] = fields[key]['value'] = inputHub.get()
+                    elif fieldType == 'multi-line':
+                        details[key] = fields[key]['value'] = inputHub.get("1.0", "end")
+                        
 
-        ttk.Button(labelledListFrame,
-                   textvariable=buttonText,
-                   command=ToggleListMode,
-                   style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3,0))
+                for child in container.winfo_children():
+                    child.destroy()
+                LabelledListMaker(container, fields, 'edit', valueHandler)
 
-        BindFamily(container, '<Return>', lambda e: ToggleListMode())
+                # for key, fieldDefinition in fields:
+                #     label = fieldDefinition['label']
+                #     value = fieldDefinition['value']
+                #     type = fieldDefinition.get('type')
+                #     if type == 'single-line' or type is None:
+                #         fieldDefinition['labelVar'].set(f'{label}{}')
+                # # for labelVar, label, entryVar in zip(labelVars, labels, entryVars):
+                # #     labelVar.set(f'{label}{entryVar.get()}')
+                # # valueHandler(i.get() for i in entryVars)
+                # currentMode = 'view'
+        #
+        # ttk.Button(labelledListFrame,
+        #            textvariable=buttonText,
+        #            command=ToggleListMode,
+        #            style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3,0))
+        #
+        #     BindFamily(container, '<Return>', lambda e: ToggleListMode())
+
+root = Tk()

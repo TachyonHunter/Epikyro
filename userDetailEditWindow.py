@@ -28,8 +28,7 @@ def UserDetailsWindow(username: str):
     listFrame = ttk.Frame(mainframe)
     listFrame.grid(row=1, column=0, sticky='NWES')
 
-    def SubmitData(values: tuple):
-        details = {k:v for k, v in zip(keys, values)}
+    def SubmitData(details: dict):
         print(details)
         elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
         if all(i == 'success' for i in elementValidities):
@@ -41,7 +40,7 @@ def UserDetailsWindow(username: str):
         else:
             messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
 
-    LabelledListMaker(listFrame, labels, values, mode='edit', valueHandler=lambda values: SubmitData(values))
+    LabelledListMaker(listFrame, labels, values, mode='edit', valueHandler=lambda details: SubmitData(details))
 
     WindowSizingTask(userDetailsWindow)
 
