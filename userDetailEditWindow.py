@@ -15,11 +15,8 @@ def UserDetailsWindow(username: str):
     mainframe.grid(column=0, row=0, sticky='N W E S')
 
     # Retrieve user details.
-    keys = ('firstName', 'lastName', 'email', 'designation', 'DOB', 'DOJoining')
     details = RetrieveUserDetails(username)
-    values = tuple(details.values())
 
-    labels = ("First Name: ", "Last Name: ", "Email: ", "Designation: ", "Date of Birth: ", "Date of Joining: ")
     ttk.Label(mainframe,
               text=f"{username}'s Details:",
               justify='left',
@@ -29,7 +26,6 @@ def UserDetailsWindow(username: str):
     listFrame.grid(row=1, column=0, sticky='NWES')
 
     def SubmitData(details: dict):
-        print(details)
         elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
         if all(i == 'success' for i in elementValidities):
             operationResult = UpdateUserDetails(username, {k: v for k, v in details.items()})
@@ -40,9 +36,40 @@ def UserDetailsWindow(username: str):
         else:
             messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
 
-    LabelledListMaker(listFrame, labels, values, mode='edit', valueHandler=lambda details: SubmitData(details))
+    fields = {
+        'firstName': {
+            'label': 'First Name: ',
+            'value': details['firstName']
+        },
+        'lastName': {
+            'label': 'Last Name: ',
+            'value': details['lastName']
+        },
+        'email': {
+            'label': 'Email: ',
+            'value': details['email']
+        },
+        'designation': {
+            'label': 'Designation: ',
+            'value': details['designation']
+        },
+        'DOB': {
+            'label': 'Date of Birth: ',
+            'value': details['DOB']
+        },
+        'DOJoining': {
+            'label': 'Date of Joining: ',
+            'value': details['DOJoining']
+        }
+    }
+
+    LabelledListMaker(listFrame, fields, mode='edit', valueHandler=lambda details: SubmitData(details))
 
     WindowSizingTask(userDetailsWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindFamily(userDetailsWindow, '<Button-1>', lambda e: userDetailsWindow.focus_set(), bindInteractives=False)
+    BindFamily(userDetailsWindow,
+               '<Button-1>',
+               lambda e: userDetailsWindow.focus_set(),
+               bindInteractives=False,
+               bindParent=False)

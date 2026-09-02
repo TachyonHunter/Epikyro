@@ -4,11 +4,10 @@ from loginWindow import LoginWindow
 from userEditorWindow import UserEditorWindow
 from inspectEmployeeWindow import InspectEmployeeWindow
 from CVManagerWindow import CVManagerWindow
-from styling import SetupStyles
+from debugStyling import SetupStyles
 from fonts import LoadFont
 from GUITools import BindFamily, WindowSizingTask
 from main import sessionStateVars, CreateEventHub
-from ttk_text import ThemedText
 
 # Creates root.
 LoadFont()
