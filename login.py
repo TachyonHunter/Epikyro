@@ -38,9 +38,6 @@ def Login(username: str,
 
     passwordHash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, main.iterations).hex()
 
-    print(f'Username: {username}\nPassword: {password}')
-    print("passwordHash: ", passwordHash, "\npasswordFromDB: ", passwordFromDB)
-
     # Check the inputted values against the DB.
     if passwordHash != passwordFromDB:
         messagebox.showerror('Error', 'Password incorrect...')

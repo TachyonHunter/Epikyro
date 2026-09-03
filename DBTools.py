@@ -95,6 +95,8 @@ def IsValueValid(valueType: str, value) -> str:
     # Below code handles invalidity.
     if valueType not in supportedTypes:
         return f'{valueType} unsupported.'
+    elif not value:
+        return f'Empty (falsy) value provided for {valueType}'
     elif valueType in ('username', 'address'):
         if not isinstance(value, str):
             return f'Invalid value provided for {valueType}.'

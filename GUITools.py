@@ -71,7 +71,7 @@ def BindFamily(parent: Widget | Toplevel | Tk,
     )
 
     if bindParent and (bindInteractives or not isinstance(parent, interactives)):
-        parent.bind(event, operation)
+        parent.bind(event, operation, add='+')
 
     for child in parent.winfo_children():
         BindFamily(
@@ -158,39 +158,79 @@ def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
 
         BindHover(elementFrame)
 
+def DropdownListMaker(container,
+                      title,
+                      elements,
+                      mode,
+                      elementType):
+    if mode not in ('view', 'edit'):
+        raise ValueError("Mode must be 'view' or 'edit'.")
 
-def DropdownListMaker(container, listTitle, elements, mode='edit'):
-    dropdownListFrame = ttk.Frame(container, padding=8)
-    dropdownListFrame.grid(row=0, column=0, sticky="NSEW")
+    dropdownListFrame = ttk.Frame(container)
+    dropdownListFrame.pack(side='top', pady=5, anchor='w')
     dropdownListFrame.columnconfigure(0, weight=1)
 
-    listElementsFrame = ttk.Frame(dropdownListFrame)
-    listElementsFrame.grid(row=1, column=0, sticky="NSEW")
-    listElementsFrame.grid_remove()
+    titleText = StringVar()
+    titleText.set('⏵ '+title)
 
-    listIsHidden = True
-    buttonText = StringVar()
-    buttonText.set('▶')
+    titleLabel = ttk.Label(dropdownListFrame,
+                           textvariable=titleText,
+                           style='Body Titles.TLabel',
+                           justify='left')
+    titleLabel.grid(column=0, row=0, sticky="W")
 
-    def ToggleList():
-        if listIsHidden:
-            listElementsFrame.grid(row=1, column=0, sticky="NSEW")
-            buttonText.set('▼')
+    elementsFrame = ttk.Frame(dropdownListFrame)
+    elementsFrame.grid(row=1, column=0, sticky="NSEW", padx=8)
+    elementsFrame.grid_remove()
+
+    isListHidden = True
+
+    def ToggleList(*args):
+        nonlocal isListHidden
+        if isListHidden:
+            elementsFrame.grid(row=1, column=0, sticky="NSEW")
+            titleText.set('⏷ '+title)
+            isListHidden = False
         else:
-            listElementsFrame.grid_remove()
-            buttonText.set('▶')
+            elementsFrame.grid_remove()
+            titleText.set('⏵ '+title)
+            isListHidden = True
 
-    ttk.Label(dropdownListFrame, text=listTitle).grid(column=0, row=0, sticky="W")
-    visibilityButton = ttk.Button(dropdownListFrame, textvariable=buttonText, command=ToggleList)
-    visibilityButton.grid(column=1, row=0, sticky="W")
+    titleLabel.bind('<Button-1>', ToggleList)
 
     if mode == 'view':
         for i in elements:
-            ttk.Label(listElementsFrame, text=i).grid(column=0, row=i, sticky="W")
-    elif mode == 'edit':
-        for i in elements:
-            pass
+            ttk.Label(elementsFrame, text=i).pack(anchor='w', pady=5)
+        return None
 
+    elif mode == 'edit':
+        getters = []
+        for i in elements:
+            if elementType == 'single-line':
+                entryVar = StringVar()
+                entryVar.set(i)
+                getters.append(entryVar.get)
+
+                ttk.Entry(elementsFrame,
+                          textvariable=entryVar,
+                          font=('Aptos', 16),
+                          justify='left').pack(anchor='w', pady=5)
+
+            elif elementType == 'multi-line':
+                textBox = ThemedText(
+                    elementsFrame,
+                    width=40,
+                    height=4,
+                    wrap='word'
+                )
+                textBox.pack(anchor='w', pady=5)
+                textBox.configure(font=('Aptos', 16))
+
+                getters.append(lambda tb=textBox: tb.get("1.0", "end-1c"))
+
+        return lambda: [getter() for getter in getters]
+
+    return None
 
 def LabelledListMaker(container,
                       fields,
@@ -232,6 +272,8 @@ def LabelledListMaker(container,
 
     labelledListFrame = ttk.Frame(container, padding=8)
     labelledListFrame.grid(row=0, column=0, sticky="NSEW")
+    labelledListFrame.columnconfigure(0, weight=1)
+    labelledListFrame.rowconfigure(0, weight=1)
 
     viewElementsFrame = ttk.Frame(labelledListFrame)
     viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
@@ -240,12 +282,12 @@ def LabelledListMaker(container,
         for key, fieldDef in fields.items():
             label = fieldDef['label']
             value = fieldDef['value']
-            ttk.Label(viewElementsFrame, text=f'{label}{value}', style='Body.TLabel').pack(anchor='w', pady=5)
+            ttk.Label(viewElementsFrame,
+                      text=f'{label}{value}',
+                      style='Body Titles.TLabel').pack(anchor='w', pady=5)
 
     if mode in ('edit', 'create'):
         editElementsFrame = ttk.Frame(labelledListFrame)
-        editElementsFrame.grid(row=0, column=0, sticky="NSEW")
-        editElementsFrame.grid_remove()
 
         inputVars = {}
 
@@ -271,7 +313,7 @@ def LabelledListMaker(container,
             if elementType == 'single-line' or elementType is None:
                 ttk.Label(elementFrame,
                           text=f'{label}',
-                          style='Body.TLabel',
+                          style='Body Titles.TLabel',
                           justify='left').pack(side='left', anchor='w')
 
                 entryVar = StringVar()
@@ -296,13 +338,21 @@ def LabelledListMaker(container,
             elif elementType == 'multi-line':
                 ttk.Label(elementFrame,
                           text=f'{label}',
-                          style='Body.TLabel',
+                          style='Body Titles.TLabel',
                           justify='left').pack(side='left', anchor='nw')
 
                 textBoxFrame = ttk.Frame(elementFrame)
                 textBoxFrame.pack(side='left', anchor='nw')
 
-                textBox = ThemedText(textBoxFrame, width=70, height=20)
+                textBox = ThemedText(
+                    textBoxFrame,
+                    width=40,
+                    height=4,
+                    wrap='word'
+                )
+
+                textBox.configure(font=('Aptos', 16))
+
                 scrollbar = ttk.Scrollbar(textBoxFrame, orient="vertical", command=textBox.yview)
 
                 textBox.configure(yscrollcommand=scrollbar.set)
@@ -318,20 +368,43 @@ def LabelledListMaker(container,
 
                 elementFrame.pack(anchor='w', pady=5)
 
-        buttonText = StringVar()
-        buttonText.set('Edit')
+            elif elementType == 'dropdown-single-line':
+                fields[key]['inputGetter'] = DropdownListMaker(elementFrame,
+                                                               label,
+                                                               value,
+                                                               mode='edit',
+                                                               elementType='single-line')
 
-        currentMode = 'view'
+                if tipCreator is not None:
+                    TipCreator(elementFrame, tipCreator)
+
+                elementFrame.pack(anchor='w', pady=5)
+
+            elif elementType == 'dropdown-multi-line':
+                fields[key]['inputGetter'] = DropdownListMaker(elementFrame,
+                                                               label,
+                                                               value,
+                                                               mode='edit',
+                                                               elementType='multi-line')
+
+                if tipCreator is not None:
+                    TipCreator(elementFrame, tipCreator)
+
+                elementFrame.pack(anchor='w', pady=5)
+
         if mode == 'edit':
-            def ToggleListMode(*args):
-                nonlocal currentMode
+            buttonText = StringVar()
+            buttonText.set('Edit')
+            currentState = 'view'
 
-                if currentMode == 'view':
+            def ToggleListMode(*args):
+                nonlocal currentState
+
+                if currentState == 'view':
                     buttonText.set('Submit')
                     editElementsFrame.grid(row=0, column=0, sticky="NSEW")
                     viewElementsFrame.grid_remove()
-                    container.update_idletasks()
-                    currentMode = 'edit'
+                    currentState = 'edit'
                 else:
                     buttonText.set('Edit')
                     viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
@@ -353,15 +426,15 @@ def LabelledListMaker(container,
 
         elif mode == 'create':
             editElementsFrame.grid(row=0, column=0, sticky="NSEW")
+
             def SubmitData():
                 details = {}
                 for key, fieldDef in fields.items():
                     inputGetter = fieldDef.get('inputGetter')
-                    details[key] = fields[key]['value'] = inputGetter()
-
+                    details[key] = inputGetter()
                 valueHandler(details)
 
             ttk.Button(labelledListFrame,
-                       textvariable=buttonText,
+                       text='Submit',
                        command=SubmitData,
                        style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3, 0))

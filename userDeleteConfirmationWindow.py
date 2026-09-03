@@ -50,4 +50,8 @@ def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
     WindowSizingTask(deleteConfirmationWindow, allowUserResizing=False)
 
     # Code to prevent permanent focus steal by widgets.
-    BindFamily(deleteConfirmationWindow, '<Button-1>', lambda e: deleteConfirmationWindow.focus_set(), bindInteractives=False)
+    BindFamily(deleteConfirmationWindow,
+               '<Button-1>',
+               lambda e: deleteConfirmationWindow.focus_set(),
+               bindInteractives=False,
+               bindParent=False)

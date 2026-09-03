@@ -1,12 +1,12 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUITools import WindowSizingTask, BindFamily
+from GUITools import WindowSizingTask, BindFamily, LabelledListMaker
 from CVTools import *
 from DBTools import IsValueValid
+from main import sessionStateVars
 
-def CVEditorWindow(mode, ID: int | None = None):
+def CVEditorWindow(mode, eventHub, ID: int | None = None):
     CVEditorWindow = Toplevel()
-    CVEditorWindow.grab_set()
     CVEditorWindow.focus_set()
     CVEditorWindow.columnconfigure(0, weight=1)
     CVEditorWindow.rowconfigure(0, weight=1)
@@ -30,33 +30,101 @@ def CVEditorWindow(mode, ID: int | None = None):
               justify='left',
               style='Sub-headings.TLabel').grid(column=0, row=0, sticky='W')
 
-    texts = ('Name: ',
-             'Address: ',
-             'Phone no.: ',
-             'Nationality: ',
-             'Gender: ',
-             'Educational Qualifications: ',
-             'Work Experience: ',
-             'Miscellaneous Achievements: ',
-             'Skills: ',
-             'Languages: ',
-             'References: ')
 
-    print(details)
 
-    displayableDetails = {k:v for k, v in details.items() if k not in ('ID', 'owner')}
-    labelTexts = dict(zip(displayableDetails.keys(), texts))
+    fields = {
+        'name': {
+            'label': 'Name: ',
+            'value': details['name'] if mode != 'create' else ''
+        },
+        'address': {
+            'label': 'Address: ',
+            'value': details['address'] if mode != 'create' else ''
+        },
+        'phoneNo': {
+            'label': 'Phone number: ',
+            'value': details['phoneNo'] if mode != 'create' else ''
+        },
+        'nationality': {
+            'label': 'Nationality: ',
+            'value': details['nationality'] if mode != 'create' else ''
+        },
+        'gender': {
+            'label': 'Gender: ',
+            'value': details['gender'] if mode != 'create' else ''
+        },
+        'eduQualifications': {
+            'label': 'Educational Qualifications: ',
+            'value': details['eduQualifications'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-multi-line'
+        },
+        'workExperience': {
+            'label': 'Work Experience: ',
+            'value': details['workExperience'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-multi-line'
+        },
+        'miscAchievements': {
+            'label': 'Achievements: ',
+            'value': details['miscAchievements'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-multi-line'
+        },
+        'skills': {
+            'label': 'Skills: ',
+            'value': details['skills'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-multi-line'
+        },
+        'languages': {
+            'label': 'Languages: ',
+            'value': details['languages'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-single-line'
+        },
+        'references': {
+            'label': 'References: ',
+            'value': details['references'] if mode != 'create' else ('',),
+            'elementType': 'dropdown-multi-line'
+        },
+    }
 
-    viewFrame = ttk.Frame(mainframe)
-    viewFrame.grid(row=1, column=0, sticky='W')
-    labelDisplayTexts = {k: f"{labelTexts[k]}{v}" for k, v in displayableDetails.items()}
-    for i, (k, v) in enumerate(displayableDetails.items()):
-        ttk.Label(viewFrame,
-                  text=labelDisplayTexts[k],
-                  style='Body.TLabel',
-                  justify='left').grid(column=0, row=i, sticky='W', pady=4)
+    account = sessionStateVars['account']
+
+    def SubmitData(details):
+        elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
+        if all(i == 'success' for i in elementValidities):
+            if mode == 'create':
+                operationResult = CreateNewCV(account, details)
+            elif mode == 'edit':
+                operationResult = UpdateExistingCV(details)
+            else:
+                raise ValueError(f'Why is submit being called in mode {mode}?')
+
+            if operationResult == 'success':
+                messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
+                if mode == 'create':
+                    eventHub.event_generate("<<CVCreated>>")
+            else:
+                messagebox.showerror('Error', operationResult, parent=mainframe)
+
+            if mode == 'create':
+                CVEditorWindow.destroy()
+
+        else:
+            messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
+
+    listFrame = ttk.Frame(mainframe)
+    listFrame.grid(column=0, row=1, sticky='NSEW')
+    if mode != 'view':
+        LabelledListMaker(listFrame,
+                          fields,
+                          mode,
+                          valueHandler=lambda details: SubmitData(details))
+    else:
+        LabelledListMaker(listFrame, fields, mode)
 
     WindowSizingTask(CVEditorWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindFamily(CVEditorWindow, '<Button-1>', lambda e: CVEditorWindow.focus_set(), bindInteractives=False)
+    BindFamily(CVEditorWindow,
+               '<Button-1>',
+               lambda e: CVEditorWindow.focus_set(),
+               bindInteractives=False,
+               bindParent=False)

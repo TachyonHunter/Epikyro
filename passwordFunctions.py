@@ -14,8 +14,9 @@ def ChangePassword(username: str, password: str):
         cursor.execute("SELECT username FROM users WHERE username = ?", (username,))
         usernameFromDB = cursor.fetchone()
         if usernameFromDB is None:
-            print("No such user")
-            return
+            return 'not found'
 
         hashedPassword, salt = GiveHashSalt(password)
         cursor.execute("UPDATE users SET hashedPassword = ?, salt = ? WHERE username = ?", (hashedPassword, salt, username))
+
+        return None

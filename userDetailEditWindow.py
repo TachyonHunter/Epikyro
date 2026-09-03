@@ -5,7 +5,6 @@ from DBTools import *
 
 def UserDetailsWindow(username: str):
     userDetailsWindow = Toplevel()
-    userDetailsWindow.grab_set()
     userDetailsWindow.focus_set()
     userDetailsWindow.columnconfigure(0, weight=1)
     userDetailsWindow.rowconfigure(0, weight=1)

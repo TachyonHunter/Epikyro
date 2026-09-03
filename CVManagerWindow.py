@@ -29,7 +29,6 @@ def CVManagerWindow(user: str, mode: str = 'edit'):
         def EditInteractiveFrame(interactiveElementsFrame: Frame | ttk.Frame,
                                  candidateName: str):
             ID = candidateName.split(' - ')[0]
-            print(ID)
             ttk.Button(interactiveElementsFrame,
                        text=f'Open CV {candidateName}',
                        style='Buttons.TButton',
