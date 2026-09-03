@@ -6,6 +6,7 @@ from datetime import datetime
 
 def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     addUserWindow = Toplevel()
+    addUserWindow.withdraw()
     addUserWindow.grab_set()
     addUserWindow.focus_set()
     addUserWindow.columnconfigure(0, weight=1)
@@ -14,7 +15,9 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
 
     mainframe = ttk.Frame(addUserWindow, padding=8)
     mainframe.grid(column=0, row=0, sticky='N W E S')
-
+    mainframe.columnconfigure(0, weight=1)
+    mainframe.rowconfigure(1, weight=1)
+    
     # keys = ('username', 'password', 'firstName', 'lastName', 'email', 'designation', 'DOB', 'DOJoining')
     # details = {key: StringVar() for key in keys}
 
@@ -26,9 +29,9 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     ttk.Label(mainframe, text='Add User:', style='Headings.TLabel', justify='left').grid(column=0, row=0, sticky='W')
 
     def SubmitData(details: dict):
-        elementValidities = tuple(IsValueValid(k, v.get()) for k, v in details.items())
+        elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
         if all(i == 'success' for i in elementValidities):
-            operationResult = AddUser({k:v.get() for k, v in details.items()})
+            operationResult = AddUser({k:v for k, v in details.items()})
             if operationResult == 'success':
                 messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
                 eventHub.event_generate("<<UserAdded>>")
@@ -92,6 +95,7 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     }
 
     listFrame = ttk.Frame(mainframe)
+    listFrame.grid(column=0, row=1, sticky='NSEW')
     LabelledListMaker(listFrame, fields, mode='create', valueHandler=lambda details: SubmitData(details))
     # entryFrame = ttk.Frame(mainframe)
     # entryFrame.grid(column=0, row=1, sticky='N W E S')
@@ -124,7 +128,13 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     #
     # ttk.Button(mainframe, text='Confirm', style='Buttons.TButton', command=AddUserCaller).grid(column=0, row=9, sticky='W')
 
+    addUserWindow.deiconify()
+
     WindowSizingTask(addUserWindow)
 
     # Code to prevent permanent focus steal by widgets.
-    BindFamily(addUserWindow, '<Button-1>', lambda e: addUserWindow.focus_set(), bindInteractives=False)
+    BindFamily(addUserWindow,
+               '<Button-1>',
+               lambda e: addUserWindow.focus_set(),
+               bindInteractives=False,
+               bindParent=False)

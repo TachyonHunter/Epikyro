@@ -158,7 +158,6 @@ def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
 
         BindHover(elementFrame)
 
-
 def DropdownListMaker(container, listTitle, elements, mode='edit'):
     dropdownListFrame = ttk.Frame(container, padding=8)
     dropdownListFrame.grid(row=0, column=0, sticky="NSEW")
@@ -190,7 +189,6 @@ def DropdownListMaker(container, listTitle, elements, mode='edit'):
     elif mode == 'edit':
         for i in elements:
             pass
-
 
 def LabelledListMaker(container,
                       fields,
@@ -232,6 +230,8 @@ def LabelledListMaker(container,
 
     labelledListFrame = ttk.Frame(container, padding=8)
     labelledListFrame.grid(row=0, column=0, sticky="NSEW")
+    labelledListFrame.columnconfigure(0, weight=1)
+    labelledListFrame.rowconfigure(0, weight=1)
 
     viewElementsFrame = ttk.Frame(labelledListFrame)
     viewElementsFrame.grid(row=0, column=0, sticky="NSEW")
@@ -244,8 +244,6 @@ def LabelledListMaker(container,
 
     if mode in ('edit', 'create'):
         editElementsFrame = ttk.Frame(labelledListFrame)
-        editElementsFrame.grid(row=0, column=0, sticky="NSEW")
-        editElementsFrame.grid_remove()
 
         inputVars = {}
 
@@ -318,11 +316,11 @@ def LabelledListMaker(container,
 
                 elementFrame.pack(anchor='w', pady=5)
 
-        buttonText = StringVar()
-        buttonText.set('Edit')
-
-        currentMode = 'view'
         if mode == 'edit':
+            buttonText = StringVar()
+            buttonText.set('Edit')
+            currentMode = 'view'
+
             def ToggleListMode(*args):
                 nonlocal currentMode
 
@@ -330,7 +328,6 @@ def LabelledListMaker(container,
                     buttonText.set('Submit')
                     editElementsFrame.grid(row=0, column=0, sticky="NSEW")
                     viewElementsFrame.grid_remove()
-                    container.update_idletasks()
                     currentMode = 'edit'
                 else:
                     buttonText.set('Edit')
@@ -353,15 +350,15 @@ def LabelledListMaker(container,
 
         elif mode == 'create':
             editElementsFrame.grid(row=0, column=0, sticky="NSEW")
+
             def SubmitData():
                 details = {}
                 for key, fieldDef in fields.items():
                     inputGetter = fieldDef.get('inputGetter')
-                    details[key] = fields[key]['value'] = inputGetter()
-
+                    details[key] = inputGetter()
                 valueHandler(details)
 
             ttk.Button(labelledListFrame,
-                       textvariable=buttonText,
+                       text='Submit',
                        command=SubmitData,
                        style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3, 0))
