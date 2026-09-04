@@ -30,8 +30,6 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
               justify='left',
               style='Sub-headings.TLabel').grid(column=0, row=0, sticky='W')
 
-
-
     fields = {
         'name': {
             'label': 'Name: ',

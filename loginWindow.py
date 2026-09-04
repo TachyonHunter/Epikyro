@@ -54,4 +54,8 @@ def LoginWindow(eventHub):
     WindowSizingTask(loginWindow, allowUserResizing=False)
 
     # Code to prevent permanent focus steal by widgets.
-    BindFamily(loginWindow, '<Button-1>', lambda e: loginWindow.focus_set(), bindInteractives=False)
+    BindFamily(loginWindow,
+               '<Button-1>',
+               lambda e: loginWindow.focus_set(),
+               bindInteractives=False,
+               bindParent=False)

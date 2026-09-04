@@ -4,7 +4,10 @@ from CVTools import ListOwnedCVs
 from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 from CVEditorWindow import CVEditorWindow
 
-def CVManagerWindow(user: str, mode: str = 'edit'):
+def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
+    if mode not in ('edit', 'view'):
+        raise ValueError("Mode parameter must be 'edit' or 'view'.")
+
     CVManagerWindow = Toplevel()
     CVManagerWindow.title(f'Your owned CVs' if mode == 'edit' else f'{user}\'s owned CVs')
     CVManagerWindow.state('zoomed')
@@ -17,10 +20,14 @@ def CVManagerWindow(user: str, mode: str = 'edit'):
     mainframe.rowconfigure(1, weight=1)
     mainframe.columnconfigure(0, weight=1)
 
+    ttk.Label(mainframe, text=f'Your owned CVs' if mode == 'edit' else f'{user}\'s owned CVs',
+              justify='left',
+              style='Headings.TLabel').grid(row=0, column=0, sticky='W', padx=8)
+
     if OwnedCVs == 'not found':
         ttk.Label(mainframe, text='No CVs associated with you...' if mode == 'edit' else f'No CVs associated with {user}...',
                   style='Sub-headings.TLabel',
-                  justify='left').grid(row=0, column=0, sticky='W', padx=8)
+                  justify='left').grid(row=1, column=0, sticky='NW', padx=8)
 
     else:
         canvasFrame = ttk.Frame(mainframe)
@@ -32,18 +39,14 @@ def CVManagerWindow(user: str, mode: str = 'edit'):
             ttk.Button(interactiveElementsFrame,
                        text=f'Open CV {candidateName}',
                        style='Buttons.TButton',
-                       command=lambda: CVEditorWindow(mode, int(ID))).grid(row=0, column=0)
+                       command=lambda: CVEditorWindow(mode, eventHub, int(ID))).grid(row=0, column=0)
 
         interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 
         # Makes the interactive, hoverable list.
         HoverableListMaker(canvasFrame, [f'{k} - {v}' for k, v in OwnedCVs.items()], interactiveFrameOperations)
 
-        ttk.Label(mainframe, text=f'Your owned CVs' if mode == 'edit' else f'{user}\'s owned CVs',
-                  justify='left',
-                  style='Headings.TLabel').grid(row=0, column=0, sticky='W', padx=8)
+    WindowSizingTask(CVManagerWindow)
 
-        WindowSizingTask(CVManagerWindow)
-
-        # Code to prevent permanent focus steal by widgets.
-        BindFamily(CVManagerWindow, '<Button-1>', lambda e: CVManagerWindow.focus_set(), bindInteractives=False)
+    # Code to prevent permanent focus steal by widgets.
+    BindFamily(CVManagerWindow, '<Button-1>', lambda e: CVManagerWindow.focus_set(), bindInteractives=False)

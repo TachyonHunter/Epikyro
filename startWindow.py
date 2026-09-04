@@ -92,11 +92,11 @@ adminFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
 adminFrame.grid(column=1, row=0, sticky='E')
 adminFrame.grid_remove()
 ttk.Button(adminFrame, text='Edit users', style="Buttons.TButton", command=lambda: UserEditorWindow(eventHub)).pack(side='left', padx=(0,4))
-ttk.Button(adminFrame, text='Inspect users', style="Buttons.TButton", command=lambda: InspectEmployeeWindow()).pack(side='right', padx=(0,4))
+ttk.Button(adminFrame, text='Inspect users', style="Buttons.TButton", command=lambda: InspectEmployeeWindow(eventHub)).pack(side='right', padx=(0,4))
 
 # Frame for general users.
 def CVManagerWindowOpener():
-    CVManagerWindow(sessionStateVars['account'])
+    CVManagerWindow(sessionStateVars['account'], eventHub)
 
 def InterviewManagerWindowOpener():
     pass # Temporary

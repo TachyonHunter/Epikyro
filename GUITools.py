@@ -200,7 +200,7 @@ def DropdownListMaker(container,
 
     if mode == 'view':
         for i in elements:
-            ttk.Label(elementsFrame, text=i).pack(anchor='w', pady=5)
+            ttk.Label(elementsFrame, text=i, style='Body.TLabel', justify='left').pack(anchor='w', pady=5)
         return None
 
     elif mode == 'edit':
@@ -282,9 +282,27 @@ def LabelledListMaker(container,
         for key, fieldDef in fields.items():
             label = fieldDef['label']
             value = fieldDef['value']
-            ttk.Label(viewElementsFrame,
-                      text=f'{label}{value}',
-                      style='Body Titles.TLabel').pack(anchor='w', pady=5)
+            elementType = fieldDef.get('elementType')
+            if elementType in ('single-line', 'multi-line') or elementType is None:
+                ttk.Label(viewElementsFrame,
+                          text=f'{label}{value}',
+                          style='Body Titles.TLabel').pack(anchor='w', pady=5)
+            elif elementType == 'dropdown-single-line':
+                elementFrame = ttk.Frame(viewElementsFrame)
+                DropdownListMaker(elementFrame,
+                                  label,
+                                  value,
+                                  mode='view',
+                                  elementType='single-line')
+                elementFrame.pack(anchor='w', pady=5)
+            elif elementType == 'dropdown-multi-line':
+                elementFrame = ttk.Frame(viewElementsFrame)
+                DropdownListMaker(elementFrame,
+                                  label,
+                                  value,
+                                  mode='view',
+                                  elementType='multi-line')
+                elementFrame.pack(anchor='w', pady=5)
 
     if mode in ('edit', 'create'):
         editElementsFrame = ttk.Frame(labelledListFrame)

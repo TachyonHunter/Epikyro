@@ -6,7 +6,7 @@ from CVTools import GetExistingCV
 from DBTools import ListUsers
 from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 
-def InspectEmployeeWindow():
+def InspectEmployeeWindow(eventHub):
     inspectEmployeeWindow = Toplevel()
     inspectEmployeeWindow.title('Inspect employees')
     inspectEmployeeWindow.state('zoomed')
@@ -28,7 +28,7 @@ def InspectEmployeeWindow():
 
         ttk.Button(interactiveElementsFrame, text='Inspect owned CVs',
                    style='Buttons.TButton',
-                   command=lambda: CVManagerWindow(username, mode='view')).grid(row=0, column=0)
+                   command=lambda: CVManagerWindow(username, eventHub, mode='view')).grid(row=0, column=0)
 
     interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 
