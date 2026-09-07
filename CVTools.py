@@ -69,9 +69,9 @@ def CreateNewCV(ownerName: str, details: dict):
             return 'success'
 
     else:
-        raise ValueError('\n'.join(i for i in elementValidities if i != 'success'))
+        return '\n'.join(i for i in elementValidities if i != 'success')
 
-def UpdateExistingCV(details: dict):
+def UpdateExistingCV(ID, details: dict):
     requiredKeys = ('owner',
                     'name',
                     'address',
@@ -90,7 +90,6 @@ def UpdateExistingCV(details: dict):
     if (all(i == 'success' for i in elementValidities)
         and all(key in details for key in requiredKeys)):
 
-        ID = details['ID']
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT fileName FROM CVs WHERE ID = ?', (ID,))
@@ -103,7 +102,7 @@ def UpdateExistingCV(details: dict):
         return 'success'
 
     else:
-        raise ValueError('\n'.join(i for i in elementValidities if i != 'success'))
+        return '\n'.join(i for i in elementValidities if i != 'success')
 
 def DeleteCV(ID: int):
     with sqlite3.connect('users.db') as conn:
@@ -124,6 +123,11 @@ def DeleteCV(ID: int):
         CVPath.rename(deletedPath)
 
         cursor.execute('UPDATE CVs SET isDeleted = TRUE WHERE ID = ?', (ID,))
+
+    if cursor.rowcount == 0:
+        raise ValueError('Not found...')
+
+    return 'success'
 
 # details = {
 #     'name': 'CNO IZECE',

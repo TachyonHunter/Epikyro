@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, font
 from typing import Callable
 from ttk_text import ThemedText
 
@@ -63,6 +63,7 @@ def BindFamily(parent: Widget | Toplevel | Tk,
     interactives = (
         ttk.Button,
         ttk.Entry,
+        ThemedText,
         ttk.Scrollbar,
         ttk.Scale,
         ttk.Combobox,
@@ -82,11 +83,7 @@ def BindFamily(parent: Widget | Toplevel | Tk,
             True
         )
 
-# Function to make hoverable, interactive lists.
-def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
-                       names: list | tuple,
-                       interactiveFrameOperations: Callable[[Frame | ttk.Frame, str], None]):
-    # Modifiable widget that supports scrolling, etc.
+def ScrollableFrameMaker(container):
     canvas = Canvas(container)
     scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
     scrollableFrame = ttk.Frame(canvas, padding=5)  # The frame to scroll through.
@@ -104,6 +101,118 @@ def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
     canvas.configure(yscrollcommand=scrollbar.set)
     canvas.pack(side="left", fill="both", expand=True, padx=5, pady=5)
     scrollbar.pack(side="right", fill="y", padx=5, pady=5)
+    return scrollableFrame
+
+def CollapsibleTextboxMaker(container, content):
+    inputFrame = ttk.Frame(container, width=350, height=40)
+    inputFrame.grid(column=0, row=0, sticky='W')
+
+    textBoxFrame = ttk.Frame(inputFrame, width=350, height=40)
+    textBoxFrame.grid(column=0, row=0)
+    textBox = ThemedText(
+        textBoxFrame,
+        width=30,
+        height=3,
+        wrap='word'
+    )
+    textBox.configure(font=('Aptos', 16))
+    textBox.insert('1.0', content)
+    textBox.grid(row=0, column=0, sticky='NSEW')
+
+    scrollbar = ttk.Scrollbar(textBoxFrame, orient="vertical", command=textBox.yview)
+    scrollbar.grid(row=0, column=1, sticky='NS')
+
+    textBox.configure(yscrollcommand=scrollbar.set)
+
+    getter = lambda: textBox.get("1.0", "end-1c")
+
+    def TruncateText(entry,
+                     textBox) -> str:
+
+        def GetFirstDisplayLine():
+            originalView = textBox.yview()
+
+            textBox.yview_moveto(0)
+            textBox.update_idletasks()
+
+            start = textBox.index('1.0')
+            startY = textBox.dlineinfo(start)[1]
+
+            index = start
+
+            while True:
+                nextIndex = textBox.index(f'{index} + 1 char')
+
+                if nextIndex == textBox.index('end'):
+                    end = nextIndex
+                    break
+
+                if textBox.dlineinfo(nextIndex)[1] != startY:
+                    end = nextIndex
+                    break
+
+                index = nextIndex
+
+            firstLine = textBox.get(start, end)
+
+            return firstLine, end
+
+        entry.update_idletasks()
+        textBox.update_idletasks()
+
+        textFont = font.Font(family='Aptos', size=16)
+        experimentallyDeterminedPadding = 10
+        maxWidth = entry.winfo_width() - 2*experimentallyDeterminedPadding
+
+        firstLine, firstLineEnd = GetFirstDisplayLine()
+
+        hasMoreLines = bool(textBox.get(firstLineEnd, 'end-1c').strip())
+        suffix = '...' if hasMoreLines else ''
+
+        if textFont.measure(firstLine + suffix) <= maxWidth:
+            return firstLine + suffix
+
+        candidate = ''
+
+        for char in firstLine:
+            if textFont.measure(candidate + char + '...') > maxWidth:
+                break
+            candidate += char
+
+        return candidate + '...'
+
+    placeholderText = StringVar()
+    placeholderEntry = ttk.Entry(inputFrame,
+                                 width=30,
+                                 justify='left',
+                                 textvariable=placeholderText,
+                                 font=('Aptos', 16))
+    placeholderEntry.grid(row=0, column=0, sticky='NSEW')
+    placeholderText.set(TruncateText(placeholderEntry, textBox))
+    textBoxFrame.grid_remove()
+
+    def DecompressText(*args):
+        placeholderEntry.grid_remove()
+        textBoxFrame.grid()
+        inputFrame.configure(height=textBox.winfo_reqheight())
+        textBox.focus_set()
+
+    def CompressText(*args):
+        placeholderText.set(TruncateText(placeholderEntry, textBox))
+        placeholderEntry.grid()
+        textBoxFrame.grid_remove()
+        inputFrame.configure(height=placeholderEntry.winfo_reqheight())
+
+    placeholderEntry.bind('<FocusIn>', DecompressText)
+    textBox.bind('<FocusOut>', CompressText)
+
+    return getter
+
+# Function to make hoverable, interactive lists.
+def HoverableListMaker(container: Toplevel | Tk | Frame | ttk.Frame,
+                       names: list | tuple,
+                       interactiveFrameOperations: Callable[[Frame | ttk.Frame, str], None]):
+    scrollableFrame = ScrollableFrameMaker(container)
 
     # Creating a sub-frame for every user.
     for name in names:
@@ -166,6 +275,9 @@ def DropdownListMaker(container,
     if mode not in ('view', 'edit'):
         raise ValueError("Mode must be 'view' or 'edit'.")
 
+    if elementType not in ('single-line', 'multi-line'):
+        raise ValueError("ElementType must be 'single-line' or 'multi-line'.")
+
     dropdownListFrame = ttk.Frame(container)
     dropdownListFrame.pack(side='top', pady=5, anchor='w')
     dropdownListFrame.columnconfigure(0, weight=1)
@@ -183,54 +295,86 @@ def DropdownListMaker(container,
     elementsFrame.grid(row=1, column=0, sticky="NSEW", padx=8)
     elementsFrame.grid_remove()
 
-    isListHidden = True
+    if mode == 'view':
+        for i in elements:
+            ttk.Label(elementsFrame, text=i, style='Body.TLabel', justify='left').pack(anchor='w', pady=5)
 
+    elif mode == 'edit':
+        getters = []
+
+        def DeleteElement(element, getter):
+            getters.remove(getter)
+            element.destroy()
+
+        if elementType == 'single-line':
+            def AddElement(content):
+                element = ttk.Frame(elementsFrame)
+                entryVar = StringVar()
+                entryVar.set(content)
+                getter = entryVar.get
+                getters.append(getter)
+
+                ttk.Entry(element,
+                          textvariable=entryVar,
+                          font=('Aptos', 16),
+                          justify='left').grid(column=0, row=0, sticky='W')
+
+                ttk.Button(
+                    element,
+                    text='Remove',
+                    style='Buttons.TButton',
+                    command=lambda frame=element, getter=getter:
+                        DeleteElement(frame, getter)
+                ).grid(column=1, row=0, sticky='E', padx=2)
+
+                element.pack(anchor='w', pady=5)
+
+            for i in elements:
+                AddElement(i)
+
+        elif elementType == 'multi-line':
+            def AddElement(content):
+                element = ttk.Frame(elementsFrame)
+                getter = CollapsibleTextboxMaker(element, content)
+                getters.append(getter)
+
+                ttk.Button(
+                    element,
+                    text='Remove',
+                    style='Buttons.TButton',
+                    command=lambda frame=element, getter=getter:
+                        DeleteElement(frame, getter)
+                ).grid(column=1, row=0, sticky='E', padx=2)
+
+                element.pack(anchor='w', pady=5)
+
+            for i in elements:
+                AddElement(i)
+
+        addElementButton = ttk.Button(dropdownListFrame,
+                                      text='Add',
+                                      style='Buttons.TButton',
+                                      command=lambda: AddElement(''))
+
+    isListHidden = True
     def ToggleList(*args):
         nonlocal isListHidden
         if isListHidden:
             elementsFrame.grid(row=1, column=0, sticky="NSEW")
-            titleText.set('⏷ '+title)
+            titleText.set('⏷ ' + title)
             isListHidden = False
+            if mode == 'edit':
+                addElementButton.grid(column=0, row=2, sticky='W', padx=2)
         else:
             elementsFrame.grid_remove()
-            titleText.set('⏵ '+title)
+            titleText.set('⏵ ' + title)
             isListHidden = True
+            if mode == 'edit':
+                addElementButton.grid_remove()
 
     titleLabel.bind('<Button-1>', ToggleList)
 
-    if mode == 'view':
-        for i in elements:
-            ttk.Label(elementsFrame, text=i, style='Body.TLabel', justify='left').pack(anchor='w', pady=5)
-        return None
-
-    elif mode == 'edit':
-        getters = []
-        for i in elements:
-            if elementType == 'single-line':
-                entryVar = StringVar()
-                entryVar.set(i)
-                getters.append(entryVar.get)
-
-                ttk.Entry(elementsFrame,
-                          textvariable=entryVar,
-                          font=('Aptos', 16),
-                          justify='left').pack(anchor='w', pady=5)
-
-            elif elementType == 'multi-line':
-                textBox = ThemedText(
-                    elementsFrame,
-                    width=40,
-                    height=4,
-                    wrap='word'
-                )
-                textBox.pack(anchor='w', pady=5)
-                textBox.configure(font=('Aptos', 16))
-
-                getters.append(lambda tb=textBox: tb.get("1.0", "end-1c"))
-
-        return lambda: [getter() for getter in getters]
-
-    return None
+    return None if mode == 'view' else lambda: tuple(getter() for getter in getters)
 
 def LabelledListMaker(container,
                       fields,
@@ -316,7 +460,7 @@ def LabelledListMaker(container,
 
             BindFamily(elementFrame,
                        '<FocusIn>',
-                       lambda e: tipObject.pack(side='bottom', anchor='w'))
+                       lambda e: tipObject.pack(side='bottom', anchor='sw'))
             BindFamily(elementFrame,
                        "<FocusOut>",
                        lambda e: tipObject.pack_forget())
@@ -329,10 +473,12 @@ def LabelledListMaker(container,
 
             elementFrame = ttk.Frame(editElementsFrame)
             if elementType == 'single-line' or elementType is None:
-                ttk.Label(elementFrame,
+                primaryFrame = ttk.Frame(elementFrame)
+                primaryFrame.pack(anchor='w', side='top')
+                ttk.Label(primaryFrame,
                           text=f'{label}',
                           style='Body Titles.TLabel',
-                          justify='left').pack(side='left', anchor='w')
+                          justify='left').pack(side='left', anchor='nw')
 
                 entryVar = StringVar()
                 inputVars[key] = entryVar
@@ -340,11 +486,11 @@ def LabelledListMaker(container,
                 fields[key]['inputGetter'] = lambda var=entryVar: var.get()
 
                 entry = ttk.Entry(
-                    elementFrame,
+                    primaryFrame,
                     textvariable=entryVar,
                     font=('Aptos', 16)
                 )
-                entry.pack(side='top', anchor='nw')
+                entry.pack(side='right', anchor='ne')
 
                 entryVar.set(value)
 
@@ -354,32 +500,17 @@ def LabelledListMaker(container,
                 elementFrame.pack(anchor='w', pady=5)
 
             elif elementType == 'multi-line':
-                ttk.Label(elementFrame,
+                primaryFrame = ttk.Frame(elementFrame)
+                primaryFrame.pack(anchor='w', side='top')
+                ttk.Label(primaryFrame,
                           text=f'{label}',
                           style='Body Titles.TLabel',
                           justify='left').pack(side='left', anchor='nw')
 
-                textBoxFrame = ttk.Frame(elementFrame)
-                textBoxFrame.pack(side='left', anchor='nw')
+                textBoxFrame = ttk.Frame(primaryFrame)
+                textBoxFrame.pack(side='right', anchor='ne')
 
-                textBox = ThemedText(
-                    textBoxFrame,
-                    width=40,
-                    height=4,
-                    wrap='word'
-                )
-
-                textBox.configure(font=('Aptos', 16))
-
-                scrollbar = ttk.Scrollbar(textBoxFrame, orient="vertical", command=textBox.yview)
-
-                textBox.configure(yscrollcommand=scrollbar.set)
-
-                textBox.pack(side="left", fill="both", expand=True)
-                scrollbar.pack(side="right", fill="y")
-
-                fields[key]['inputGetter'] = lambda: textBox.get("1.0", "end-1c")
-                textBox.insert('1.0', f'{value}')
+                fields[key]['inputGetter'] = CollapsibleTextboxMaker(textBoxFrame, value)
 
                 if tipCreator is not None:
                     TipCreator(elementFrame, tipCreator)

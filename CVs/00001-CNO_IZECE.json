@@ -1,15 +1,12 @@
 {
-    "ID": 1,
-    "owner": "tempUser",
     "name": "CNO IZECE",
     "address": "314P, 15th Street, Dubai",
     "phoneNo": "3141592653",
     "nationality": "Indian",
     "gender": "Male",
     "eduQualifications": [
-        "12 - CBSE - 2026",
+        "Class 12 - CBSE - 2026",
         "BSc - ??? - 2030",
-        "MSc - ??? - 2032",
         "PhD - MIT - 2040"
     ],
     "workExperience": [
@@ -28,5 +25,6 @@
     ],
     "references": [
         "NA"
-    ]
+    ],
+    "owner": "tempUser"
 }

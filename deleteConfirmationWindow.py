@@ -2,8 +2,12 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from DBTools import *
 from GUITools import WindowSizingTask, BindFamily
+from CVTools import DeleteCV
 
-def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
+def DeleteConfirmationWindow(record: str, mode: str, eventHub: ttk.Frame | Frame) -> None:
+    if mode not in ('user', 'CV'):
+        raise ValueError("Mode parameter must be 'user' or 'CV'.")
+
     deleteConfirmationWindow = Toplevel()
     deleteConfirmationWindow.grab_set()
     deleteConfirmationWindow.focus_set()
@@ -19,29 +23,39 @@ def DeleteConfirmationWindow(user: str, eventHub: ttk.Frame | Frame) -> None:
 
     def LastBarrier(*args):
         confirmButton.grid_remove()
-        userConfirmInput = StringVar()
+        confirmInput = StringVar()
 
         def DeleteUserCaller(*args):
-            if userConfirmInput.get() == user:
-                operationResult = DeleteUser(userConfirmInput.get())
+            if confirmInput.get() == record:
+                if mode == 'user':
+                    operationResult = DeleteUser(confirmInput.get())
+                else:
+                    ID = int(record.split(' - ')[0])
+                    operationResult = DeleteCV(ID)
                 if operationResult == 'success':
-                    messagebox.showinfo('Success!', 'User deleted successfully!', parent=mainframe)
-                    eventHub.event_generate("<<UserDeleted>>")
+                    messagebox.showinfo('Success!',
+                                        'User deleted successfully!' if mode == 'user' else 'CV deleted successfully!',
+                                        parent=mainframe)
+                    eventHub.event_generate("<<UserDeleted>>" if mode == 'user' else '<<CVDeleted>>',)
                 else:
                     messagebox.showerror('Error', operationResult, parent=mainframe)
 
                 deleteConfirmationWindow.destroy()
             else:
-                messagebox.showerror("Error", "Mismatched Username...", parent=mainframe)
+                messagebox.showerror("Error",
+                                     "Mismatched Username..." if mode == 'user' else "Mismatched CV...",
+                                     parent=mainframe)
                 deleteConfirmationWindow.destroy()
 
-        ttk.Label(mainframe, text='Re-enter the username:', style='Body.TLabel').grid(row=2, column=0)
-        ttk.Entry(mainframe, textvariable=userConfirmInput, font=('Aptos', 14)).grid(row=3, column=0)
+        ttk.Label(mainframe,
+                  text='Re-enter the username:' if mode == 'user' else 'Re-enter the CV Name:',
+                  style='Body.TLabel').grid(row=2, column=0)
+        ttk.Entry(mainframe, textvariable=confirmInput, font=('Aptos', 14)).grid(row=3, column=0)
         ttk.Button(mainframe, text='Confirm', command=DeleteUserCaller, style='Buttons.TButton').grid(row=4, column=0, pady=4)
 
         deleteConfirmationWindow.bind('<Return>', DeleteUserCaller)
 
-    ttk.Label(mainframe, text=f'Are you sure you want to delete "{user}"?', style='Body Titles.TLabel').grid(row=1, column=0)
+    ttk.Label(mainframe, text=f'Are you sure you want to delete "{record}"?', style='Body Titles.TLabel').grid(row=1, column=0)
     confirmButton = ttk.Button(mainframe, text='Yes', command=LastBarrier, style='Buttons.TButton')
     confirmButton.grid(row=2, column=0)
 

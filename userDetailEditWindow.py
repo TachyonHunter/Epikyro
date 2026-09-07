@@ -25,15 +25,11 @@ def UserDetailsWindow(username: str):
     listFrame.grid(row=1, column=0, sticky='NWES')
 
     def SubmitData(details: dict):
-        elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
-        if all(i == 'success' for i in elementValidities):
-            operationResult = UpdateUserDetails(username, {k: v for k, v in details.items()})
-            if operationResult == 'success':
-                messagebox.showinfo('Success!', 'User details updated successfully!', parent=mainframe)
-            else:
-                messagebox.showerror('Error', operationResult, parent=mainframe)
+        operationResult = UpdateUserDetails(username, {k: v for k, v in details.items()})
+        if operationResult == 'success':
+            messagebox.showinfo('Success!', 'User details updated successfully!', parent=mainframe)
         else:
-            messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
+            messagebox.showerror('Error', operationResult, parent=mainframe)
 
     fields = {
         'firstName': {

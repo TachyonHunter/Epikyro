@@ -95,17 +95,21 @@ ttk.Button(adminFrame, text='Edit users', style="Buttons.TButton", command=lambd
 ttk.Button(adminFrame, text='Inspect users', style="Buttons.TButton", command=lambda: InspectEmployeeWindow(eventHub)).pack(side='right', padx=(0,4))
 
 # Frame for general users.
-def CVManagerWindowOpener():
-    CVManagerWindow(sessionStateVars['account'], eventHub)
-
 def InterviewManagerWindowOpener():
     pass # Temporary
 
 generalFrame = ttk.Frame(headerFrame, style='Header/Border.TFrame')
 generalFrame.grid(column=1, row=0, sticky='N W E S')
 generalFrame.grid_remove()
-ttk.Button(generalFrame, text='Manage CVs and Candidates', style="Buttons.TButton", command=CVManagerWindowOpener).pack(side='left', padx=(0,4))
-ttk.Button(generalFrame, text='Manage Interviews', style="Buttons.TButton", command=InterviewManagerWindowOpener).pack(side='right', padx=(0,4))
+ttk.Button(generalFrame,
+           text='Manage CVs and Candidates',
+           style="Buttons.TButton",
+           command=lambda:
+               CVManagerWindow(sessionStateVars['account'], eventHub)).pack(side='left', padx=(0,4))
+ttk.Button(generalFrame,
+           text='Manage Interviews',
+           style="Buttons.TButton",
+           command=InterviewManagerWindowOpener).pack(side='right', padx=(0,4))
 
 # Functions for the account system.
 def UpdateOnLogin(accountType):

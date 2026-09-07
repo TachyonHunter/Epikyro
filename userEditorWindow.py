@@ -4,7 +4,7 @@ from GUITools import HoverableListMaker, WindowSizingTask
 from login import *
 from DBTools import *
 from GUITools import BindFamily
-from userDeleteConfirmationWindow import DeleteConfirmationWindow
+from deleteConfirmationWindow import DeleteConfirmationWindow
 from userAddWindow import AddUserWindow
 from userDetailEditWindow import UserDetailsWindow
 
@@ -18,8 +18,8 @@ def UserEditorWindow(eventHub):
     def CreateUserList(eventHub):
         users = ListUsers()
 
-        canvasFrame = ttk.Frame(userEditWindow)
-        canvasFrame.grid(row=1, column=0, sticky='NSEW')
+        listFrame = ttk.Frame(userEditWindow)
+        listFrame.grid(row=1, column=0, sticky='NSEW')
 
         # Function to edit the interactive frame that appears on hover.
         def EditInteractiveFrame(interactiveElementsFrame: Frame | ttk.Frame,
@@ -29,21 +29,21 @@ def UserEditorWindow(eventHub):
             ttk.Button(interactiveElementsFrame, text="Edit User Details", style='Buttons.TButton',
                        command=lambda: UserDetailsWindow(username)).grid(row=0, column=0, sticky='E', padx=4)
             ttk.Button(interactiveElementsFrame, text="Delete User", style='Buttons.TButton',
-                       command=lambda: DeleteConfirmationWindow(username, eventHub)).grid(row=0, column=1, sticky='E')
+                       command=lambda: DeleteConfirmationWindow(username, 'user', eventHub)).grid(row=0, column=1, sticky='E')
 
         interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 
         # Makes the interactive, hoverable list.
-        HoverableListMaker(canvasFrame, users, interactiveFrameOperations)
+        HoverableListMaker(listFrame, users, interactiveFrameOperations)
 
-        return canvasFrame
+        return listFrame
 
     def RefreshUserList(eventHub, *args):
-        nonlocal canvasFrame
-        canvasFrame.destroy()
-        canvasFrame = CreateUserList(eventHub)
+        nonlocal listFrame
+        listFrame.destroy()
+        listFrame = CreateUserList(eventHub)
 
-    canvasFrame = CreateUserList(eventHub)
+    listFrame = CreateUserList(eventHub)
 
     headFrame = ttk.Frame(userEditWindow)
     headFrame.grid(row=0, column=0, sticky='NSEW')

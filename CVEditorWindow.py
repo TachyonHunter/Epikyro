@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUITools import WindowSizingTask, BindFamily, LabelledListMaker
+from GUITools import WindowSizingTask, BindFamily, LabelledListMaker, ScrollableFrameMaker
 from CVTools import *
 from DBTools import IsValueValid
 from main import sessionStateVars
@@ -22,6 +22,8 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
 
     mainframe = ttk.Frame(CVEditorWindow, padding=8)
     mainframe.grid(column=0, row=0, sticky='N W E S')
+    mainframe.columnconfigure(0, weight=1)
+    mainframe.rowconfigure(1, weight=1)
 
     # Retrieve CV.
     details = GetExistingCV(ID) if mode != 'create' else {}
@@ -86,17 +88,18 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
     account = sessionStateVars['account']
 
     def SubmitData(details):
-        elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
-        if all(i == 'success' for i in elementValidities):
             if mode == 'create':
                 operationResult = CreateNewCV(account, details)
             elif mode == 'edit':
-                operationResult = UpdateExistingCV(details)
+                details['owner'] = account
+                operationResult = UpdateExistingCV(ID, details)
             else:
                 raise ValueError(f'Why is submit being called in mode {mode}?')
 
             if operationResult == 'success':
-                messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
+                messagebox.showinfo('Success!',
+                                    'CV added successfully!' if mode == 'create' else 'Changes submitted!',
+                                    parent=mainframe)
                 if mode == 'create':
                     eventHub.event_generate("<<CVCreated>>")
             else:
@@ -105,18 +108,17 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
             if mode == 'create':
                 CVEditorWindow.destroy()
 
-        else:
-            messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
-
     listFrame = ttk.Frame(mainframe)
     listFrame.grid(column=0, row=1, sticky='NSEW')
+    scrollableFrame = ScrollableFrameMaker(listFrame)
+
     if mode != 'view':
-        LabelledListMaker(listFrame,
+        LabelledListMaker(scrollableFrame,
                           fields,
                           mode,
                           valueHandler=lambda details: SubmitData(details))
     else:
-        LabelledListMaker(listFrame, fields, mode)
+        LabelledListMaker(scrollableFrame, fields, mode)
 
     WindowSizingTask(CVEditorWindow)
 

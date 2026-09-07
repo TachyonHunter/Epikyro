@@ -1,0 +1,28 @@
+{
+    "ID": 2,
+    "owner": "tempUser",
+    "name": "Mahadevan",
+    "address": "Villa 121, 32nd St., Dubai",
+    "phoneNo": "0506530232",
+    "nationality": "Indian",
+    "gender": "Male",
+    "eduQualifications": [
+        "CBSE - 12 - 2025",
+        "Amity University - BCom. - 2029"
+    ],
+    "workExperience": [
+        "NA"
+    ],
+    "miscAchievements": [
+        "Graduated with Honors from Amity University."
+    ],
+    "skills": [
+        "NA"
+    ],
+    "languages": [
+        "English"
+    ],
+    "references": [
+        "NA"
+    ]
+}

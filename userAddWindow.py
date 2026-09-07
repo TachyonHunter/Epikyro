@@ -19,17 +19,12 @@ def AddUserWindow(eventHub: ttk.Frame | Frame) -> None:
     ttk.Label(mainframe, text='Add User:', style='Headings.TLabel', justify='left').grid(column=0, row=0, sticky='W')
 
     def SubmitData(details: dict):
-        elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
-        if all(i == 'success' for i in elementValidities):
-            operationResult = AddUser({k:v for k, v in details.items()})
-            if operationResult == 'success':
-                messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
-                eventHub.event_generate("<<UserAdded>>")
-            else:
-                messagebox.showerror('Error', operationResult, parent=mainframe)
-            addUserWindow.destroy()
+        operationResult = AddUser({k:v for k, v in details.items()})
+        if operationResult == 'success':
+            messagebox.showinfo('Success!', 'User added successfully!', parent=mainframe)
+            eventHub.event_generate("<<UserAdded>>")
         else:
-            messagebox.showerror('Error', '\n'.join(i for i in elementValidities if i != 'success'), parent=mainframe)
+            messagebox.showerror('Error', operationResult, parent=mainframe)
 
     def CreatePasswordRuleTip(container):
         passwordRulesFrame = ttk.Frame(container)

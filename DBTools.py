@@ -2,7 +2,6 @@
 from datetime import datetime
 from passwordFunctions import GiveHashSalt
 
-
 # Function returning a list of users from our database.
 def ListUsers(skipAdmins: bool = False):
     with sqlite3.connect('users.db') as conn:
@@ -19,6 +18,10 @@ def DeleteUser(user: str):
     with sqlite3.connect('users.db') as conn:
         cursor = conn.cursor()
         cursor.execute(f"UPDATE users SET isDeleted = TRUE WHERE username = ?", (user,))
+
+    if cursor.rowcount == 0:
+        raise ValueError('Not found...')
+
     return 'success'
 
 # Function retrieving user details for a given user.
@@ -36,32 +39,40 @@ def RetrieveUserDetails(user: str,
 
 # Function updating all given columns with new values for a given user.
 def UpdateUserDetails(user: str, details: dict):
-    with sqlite3.connect('users.db') as conn:
-        cursor = conn.cursor()
-        setClause = ", ".join(f"{k} = ?" for k in details.keys())
-        cursor.execute(f"""
-                       UPDATE users
-                       SET {setClause}
-                       WHERE username = ?
-                       """, tuple(v for v in details.values())+(user,))
-    return 'success'
+    elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
+    if all(i == 'success' for i in elementValidities):
+        with sqlite3.connect('users.db') as conn:
+            cursor = conn.cursor()
+            setClause = ", ".join(f"{k} = ?" for k in details.keys())
+            cursor.execute(f"""
+                           UPDATE users
+                           SET {setClause}
+                           WHERE username = ?
+                           """, tuple(v for v in details.values())+(user,))
+        return 'success'
+    else:
+        return '\n'.join(i for i in elementValidities if i != 'success')
 
 # Function to add new users to the DB.
 def AddUser(details: dict):
-    with sqlite3.connect('users.db') as conn:
-        cursor = conn.cursor()
+    elementValidities = tuple(IsValueValid(k, v) for k, v in details.items())
+    if all(i == 'success' for i in elementValidities):
+        with sqlite3.connect('users.db') as conn:
+            cursor = conn.cursor()
 
-        password = details['password']
-        hashedPassword, salt = GiveHashSalt(password)
-        del details['password']
-        details['hashedPassword'] = hashedPassword
-        details['salt'] = salt
-        details['isDeleted'] = False
+            password = details['password']
+            hashedPassword, salt = GiveHashSalt(password)
+            del details['password']
+            details['hashedPassword'] = hashedPassword
+            details['salt'] = salt
+            details['isDeleted'] = False
 
-        columns = ', '.join(details.keys())
-        valuePlaceholders = ', '.join('?' for _ in details.keys())
-        cursor.execute(f'INSERT INTO users ({columns}) VALUES ({valuePlaceholders})', tuple(details.values()))
-    return 'success'
+            columns = ', '.join(details.keys())
+            valuePlaceholders = ', '.join('?' for _ in details.keys())
+            cursor.execute(f'INSERT INTO users ({columns}) VALUES ({valuePlaceholders})', tuple(details.values()))
+        return 'success'
+    else:
+        return '\n'.join(i for i in elementValidities if i != 'success')
 
 def GetValueFromUser(username: str, column: str):
     with sqlite3.connect('users.db') as conn:
