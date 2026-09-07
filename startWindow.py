@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import ttk
 from loginWindow import LoginWindow
 from userEditorWindow import UserEditorWindow
-from inspectEmployeeWindow import InspectEmployeeWindow
 from CVManagerWindow import CVManagerWindow
 from styling import SetupStyles
 # from debugStyling import SetupStyles

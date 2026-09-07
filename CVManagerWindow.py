@@ -42,7 +42,7 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
                                style='Buttons.TButton',
                                command=lambda: DeleteConfirmationWindow(candidateName,
                                                                         'CV',
-                                                                        eventHub)).grid(row=0, column=1)
+                                                                        eventHub)).grid(row=0, column=1, padx=4)
 
             interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 

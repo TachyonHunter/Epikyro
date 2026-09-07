@@ -271,7 +271,8 @@ def DropdownListMaker(container,
                       title,
                       elements,
                       mode,
-                      elementType):
+                      elementType,
+                      tipDeclaration = None):
     if mode not in ('view', 'edit'):
         raise ValueError("Mode must be 'view' or 'edit'.")
 
@@ -301,6 +302,17 @@ def DropdownListMaker(container,
 
     elif mode == 'edit':
         getters = []
+        if tipDeclaration is not None:
+            tipFrame = tipDeclaration(elementsFrame)
+            tipFrame.pack(side='top', anchor='nw')
+            tipFrame.pack_forget()
+
+            BindFamily(elementsFrame,
+                       '<FocusIn>',
+                       lambda e: tipFrame.pack(side='bottom', anchor='sw'))
+            BindFamily(elementsFrame,
+                       "<FocusOut>",
+                       lambda e: tipFrame.pack_forget())
 
         def DeleteElement(element, getter):
             getters.remove(getter)
@@ -365,12 +377,18 @@ def DropdownListMaker(container,
             isListHidden = False
             if mode == 'edit':
                 addElementButton.grid(column=0, row=2, sticky='W', padx=2)
+
+            if tipDeclaration is not None:
+                tipFrame.pack(side='top', anchor='nw')
         else:
             elementsFrame.grid_remove()
             titleText.set('⏵ ' + title)
             isListHidden = True
             if mode == 'edit':
                 addElementButton.grid_remove()
+
+            if tipDeclaration is not None:
+                tipFrame.pack_forget()
 
     titleLabel.bind('<Button-1>', ToggleList)
 
@@ -522,10 +540,8 @@ def LabelledListMaker(container,
                                                                label,
                                                                value,
                                                                mode='edit',
-                                                               elementType='single-line')
-
-                if tipCreator is not None:
-                    TipCreator(elementFrame, tipCreator)
+                                                               elementType='single-line',
+                                                               tipDeclaration=tipCreator)
 
                 elementFrame.pack(anchor='w', pady=5)
 
@@ -534,10 +550,8 @@ def LabelledListMaker(container,
                                                                label,
                                                                value,
                                                                mode='edit',
-                                                               elementType='multi-line')
-
-                if tipCreator is not None:
-                    TipCreator(elementFrame, tipCreator)
+                                                               elementType='multi-line',
+                                                               tipDeclaration=tipCreator)
 
                 elementFrame.pack(anchor='w', pady=5)
 
