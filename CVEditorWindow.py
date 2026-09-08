@@ -4,6 +4,8 @@ from GUITools import WindowSizingTask, BindFamily, LabelledListMaker, Scrollable
 from CVTools import *
 from DBTools import IsValueValid
 from main import sessionStateVars
+from tagManagerWindow import TagManagerWindow
+
 
 def CVEditorWindow(mode, eventHub, ID: int | None = None):
     CVEditorWindow = Toplevel()
@@ -145,6 +147,7 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
                                 parent=mainframe)
             if mode == 'create':
                 eventHub.event_generate("<<CVCreated>>")
+            TagManagerWindow(details)
         else:
             messagebox.showerror('Error', operationResult, parent=mainframe)
 

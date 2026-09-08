@@ -303,16 +303,10 @@ def DropdownListMaker(container,
     elif mode == 'edit':
         getters = []
         if tipDeclaration is not None:
-            tipFrame = tipDeclaration(elementsFrame)
+            tipFrame = ttk.Frame(elementsFrame)
+            tipObject = tipDeclaration(tipFrame)
             tipFrame.pack(side='top', anchor='nw')
-            tipFrame.pack_forget()
-
-            BindFamily(elementsFrame,
-                       '<FocusIn>',
-                       lambda e: tipFrame.pack(side='bottom', anchor='sw'))
-            BindFamily(elementsFrame,
-                       "<FocusOut>",
-                       lambda e: tipFrame.pack_forget())
+            tipObject.grid(row=0, column=0, sticky='NSEW')
 
         def DeleteElement(element, getter):
             getters.remove(getter)

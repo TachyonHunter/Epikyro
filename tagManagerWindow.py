@@ -1,0 +1,2 @@
+def TagManagerWindow(details):
+    pass

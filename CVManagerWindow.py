@@ -65,6 +65,14 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
     ttk.Label(headFrame, text=f'Your owned CVs' if mode == 'edit' else f'{user}\'s owned CVs',
               justify='left',
               style='Headings.TLabel').grid(row=0, column=0, sticky='W', padx=8)
+
+    searchbarFrame = ttk.Frame(headFrame)
+    searchbarFrame.grid(row=1, column=0, sticky='NSEW')
+    ttk.Label(searchbarFrame,
+              text="Search:",
+              style='Body.TLabel',
+              justify="left").grid(row=0, column=0, padx=4)
+
     ttk.Button(headFrame,
                text="Add New CV",
                style='Buttons.TButton',
@@ -72,7 +80,7 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
     ttk.Button(headFrame,
                text="Search CVs",
                style='Buttons.TButton',
-               )
+               ).grid(row=0, column=2, sticky='E', padx=10)
 
     WindowSizingTask(CVManagerWindow)
 
