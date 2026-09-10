@@ -276,8 +276,8 @@ def DropdownListMaker(container,
     if mode not in ('view', 'edit'):
         raise ValueError("Mode must be 'view' or 'edit'.")
 
-    if elementType not in ('single-line', 'multi-line'):
-        raise ValueError("ElementType must be 'single-line' or 'multi-line'.")
+    if elementType not in ('single-line', 'multi-line', 'structured-single-line', 'structured-multi-line'):
+        raise ValueError("ElementType must be 'single-line', 'structured-single-line', 'structured-multi-line' or 'multi-line'.")
 
     dropdownListFrame = ttk.Frame(container)
     dropdownListFrame.pack(side='top', pady=5, anchor='w')
@@ -357,6 +357,37 @@ def DropdownListMaker(container,
             for i in elements:
                 AddElement(i)
 
+        elif elementType == 'structured':
+            def AddElement(content):
+                element = ttk.Frame(elementsFrame)
+                structureFrame = ttk.Frame(elementsFrame)
+                structureFrame.grid(row=0, column=0, sticky='NSEW')
+                getter = LabelledListMaker(structureFrame, content, 'core')
+                getters.append(getter)
+                structureFrame.grid_remove()
+
+                collapsedFrame = ttk.Frame(element)
+                collapsedFrame.grid(row=0, column=0, sticky='NSEW')
+                dropdownText = StringVar()
+                ttk.Label(collapsedFrame,
+                          textvariable=dropdownText,
+                          style='Body.TLabel',
+                          justify='left').grid(row=0, column=0, sticky='W')
+                dropdownText.set('⏵ '+' - '.join())
+
+                ttk.Button(
+                    element,
+                    text='Remove',
+                    style='Buttons.TButton',
+                    command=lambda frame=element, getter=getter:
+                    DeleteElement(frame, getter)
+                ).grid(column=1, row=0, sticky='E', padx=2)
+
+                element.pack(anchor='w', pady=5)
+
+            for i in elements:
+                AddElement(i)
+
         addElementButton = ttk.Button(dropdownListFrame,
                                       text='Add',
                                       style='Buttons.TButton',
@@ -410,15 +441,17 @@ def LabelledListMaker(container,
         - 'multi-line'
         - 'dropdown-single-line'
         - 'dropdown-multi-line'
+        - 'structured-dropdown-single-line'
+        - 'stuctured-dropdown-multi-line'
 
-    During creation of the list, the key 'inputHub' is added. Its value is
+    During creation of the list, the key 'inputGetter' is added. Its value is
     an object that contains the inputted data.
 
     The colon (:), etc. must be provided for the label.
     """
 
-    if mode not in ('view', 'edit', 'create'):
-        raise ValueError("Mode must be 'view', 'edit' or 'create'.")
+    if mode not in ('view', 'edit', 'create', 'core'):
+        raise ValueError("Mode must be 'view', 'edit', 'core' or 'create'.")
 
     if mode == 'edit' and valueHandler is None:
         raise TypeError('LabelledListMaker() is missing required argument valueHandler while in edit mode.')
@@ -549,6 +582,16 @@ def LabelledListMaker(container,
 
                 elementFrame.pack(anchor='w', pady=5)
 
+            elif elementType == 'structured-dropdown':
+                fields[key]['inputGetter'] = DropdownListMaker(elementFrame,
+                                                               label,
+                                                               value,
+                                                               mode='edit',
+                                                               elementType='structured',
+                                                               tipDeclaration=tipCreator)
+
+                elementFrame.pack(anchor='w', pady=5)
+
         if mode == 'edit':
             buttonText = StringVar()
             buttonText.set('Edit')
@@ -581,6 +624,9 @@ def LabelledListMaker(container,
                        command=ToggleListMode,
                        style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3, 0))
 
+        elif mode == 'core':
+            return tuple(fieldDef['inputGetter'] for k, fieldDef in fields.items())
+
         elif mode == 'create':
             editElementsFrame.grid(row=0, column=0, sticky="NSEW")
 
@@ -595,3 +641,5 @@ def LabelledListMaker(container,
                        text='Submit',
                        command=SubmitData,
                        style='Buttons.TButton').grid(row=1, column=0, sticky='W', pady=(3, 0))
+
+    return None

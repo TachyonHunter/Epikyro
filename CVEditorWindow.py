@@ -95,8 +95,19 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
         },
         'eduQualifications': {
             'label': 'Educational Qualifications: ',
-            'value': details['eduQualifications'] if mode != 'create' else ('',),
-            'elementType': 'dropdown-multi-line',
+            'value': {
+                'structure': {
+                    'degree': 'Degree: ',
+                    'institution': 'Institution: ',
+                    'year': 'Year: '
+                },
+                'values': {
+                    'degree': 'PhD',
+                    'institution': 'MIT',
+                    'year': '2040'
+                }
+            }, # details['eduQualifications'] if mode != 'create' else ('',),
+            'elementType': 'structured-dropdown',
             'tipCreator': lambda container: EducationTipCreator(container)
         },
         'workExperience': {
