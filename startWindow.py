@@ -3,8 +3,8 @@ from tkinter import ttk
 from loginWindow import LoginWindow
 from userEditorWindow import UserEditorWindow
 from CVManagerWindow import CVManagerWindow
-from styling import SetupStyles
-# from debugStyling import SetupStyles
+# from styling import SetupStyles
+from debugStyling import SetupStyles
 from fonts import LoadFont
 from GUITools import BindFamily, WindowSizingTask
 from main import sessionStateVars, CreateEventHub

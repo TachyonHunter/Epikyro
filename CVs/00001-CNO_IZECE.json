@@ -5,18 +5,19 @@
     "nationality": "Indian",
     "gender": "Male",
     "eduQualifications": [
-        "Class 12 - CBSE - 2026",
-        "BSc - ??? - 2030",
-        "PhD - MIT - 2040"
+        {"degree":  "Class 12", "institution":  "CBSE", "year": "2026"},
+        {"degree":  "BSc", "institution":  "???", "year": "2030"},
+        {"degree":  "MSc", "institution":  "MIT", "year": "2032"},
+        {"degree":  "PhD", "institution":  "MIT", "year": "2040"}
     ],
     "workExperience": [
-        "NA"
+        {}
     ],
     "miscAchievements": [
         "NA"
     ],
     "skills": [
-        "NA"
+        "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
     ],
     "languages": [
         "English",
@@ -24,7 +25,7 @@
         "Malayalam"
     ],
     "references": [
-        "NA"
+        {}
     ],
     "owner": "tempUser"
 }

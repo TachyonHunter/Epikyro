@@ -13,8 +13,6 @@ def GetExistingCV(searchQuery, column: str = 'ID'):
     with filePath.open('r') as fileHandler:
         details = json.load(fileHandler)
 
-    details['eduQualifications'] = ' - '.join(details['eduQualifications'])
-    details['workExperience'] = ' - '.join(details['workExperience'])
     return details
 
 def ListOwnedCVs(user: str):
@@ -47,9 +45,6 @@ def CreateNewCV(ownerName: str, details: dict):
 
     if (all(i == 'success' for i in elementValidities)
         and all(key in details for key in requiredKeys)):
-
-            details['eduQualifications'] = [i.split(' - ') for i in details['eduQualifications']]
-            details['workExperience'] = [i.split(' - ') for i in details['workExperience']]
 
             with sqlite3.connect('users.db') as conn:
                 cursor = conn.cursor()
@@ -95,9 +90,6 @@ def UpdateExistingCV(ID, details: dict):
     if (all(i == 'success' for i in elementValidities)
         and all(key in details for key in requiredKeys)):
 
-        details['eduQualifications'] = [i.split(' - ') for i in details['eduQualifications']]
-        details['workExperience'] = [i.split(' - ') for i in details['workExperience']]
-
         with sqlite3.connect('users.db') as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT fileName FROM CVs WHERE ID = ?', (ID,))
@@ -137,17 +129,17 @@ def DeleteCV(ID: int):
 
     return 'success'
 
-def GenerateTags(details):
-    tags = {}
-    tags['name'] = details['name']
-    tags['address'] = details['address']
-    tags['nationality'] = details['nationality']
-    tags['eduMagnitude'] = len(details['eduQualifications'])
-    tags['degrees'] = [
-        i.split(' - ')[0] for i in details['eduQualifications']
-    ]
-    yearsOfWork = 0
-    for i in workExperience
+# def GenerateTags(details):
+#     tags = {}
+#     tags['name'] = details['name']
+#     tags['address'] = details['address']
+#     tags['nationality'] = details['nationality']
+#     tags['eduMagnitude'] = len(details['eduQualifications'])
+#     tags['degrees'] = [
+#         i.split(' - ')[0] for i in details['eduQualifications']
+#     ]
+#     yearsOfWork = 0
+#     for i in workExperience
 
     # for key, value in details.items():
 

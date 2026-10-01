@@ -276,11 +276,11 @@ def DropdownListMaker(container,
     if mode not in ('view', 'edit'):
         raise ValueError("Mode must be 'view' or 'edit'.")
 
-    if elementType not in ('single-line', 'multi-line', 'structured-single-line', 'structured-multi-line'):
-        raise ValueError("ElementType must be 'single-line', 'structured-single-line', 'structured-multi-line' or 'multi-line'.")
+    if elementType not in ('single-line', 'multi-line', 'structured'):
+        raise ValueError("ElementType must be 'single-line', 'multi-line' or 'structured'.")
 
     dropdownListFrame = ttk.Frame(container)
-    dropdownListFrame.pack(side='top', pady=5, anchor='w')
+    dropdownListFrame.grid(row=0, column=0, pady=5)
     dropdownListFrame.columnconfigure(0, weight=1)
 
     titleText = StringVar()
@@ -297,8 +297,14 @@ def DropdownListMaker(container,
     elementsFrame.grid_remove()
 
     if mode == 'view':
-        for i in elements:
-            ttk.Label(elementsFrame, text=i, style='Body.TLabel', justify='left').pack(anchor='w', pady=5)
+        if mode != 'structured':
+            for i in elements:
+                text = i
+                if len(text) > 20:
+                   text = text[:17]+'...'
+                ttk.Label(elementsFrame, text=text, style='Body.TLabel', justify='left').pack(anchor='w', pady=5)
+        else:
+            pass
 
     elif mode == 'edit':
         getters = []
@@ -360,9 +366,25 @@ def DropdownListMaker(container,
         elif elementType == 'structured':
             def AddElement(content):
                 element = ttk.Frame(elementsFrame)
-                structureFrame = ttk.Frame(elementsFrame)
+                structureFrame = ttk.Frame(element)
                 structureFrame.grid(row=0, column=0, sticky='NSEW')
-                getter = LabelledListMaker(structureFrame, content, 'core')
+
+                fields = {}
+
+                if content:
+                    for k, v in content.items():
+                        fields[k] = {}
+                        fields[k]['label'] = elements['structure']['labels'][k]
+                        fields[k]['value'] = v
+                        fields[k]['elementType'] = elements['structure']['elementTypes'][k]
+                else:
+                    for k, v in elements['structure'].items():
+                        fields[k] = {}
+                        fields[k]['label'] = v['labels'][k]
+                        fields[k]['value'] = ''
+                        fields[k]['elementType'] = v['elementTypes'][k]
+
+                getter = LabelledListMaker(structureFrame, fields, 'core')
                 getters.append(getter)
                 structureFrame.grid_remove()
 
@@ -373,7 +395,7 @@ def DropdownListMaker(container,
                           textvariable=dropdownText,
                           style='Body.TLabel',
                           justify='left').grid(row=0, column=0, sticky='W')
-                dropdownText.set('⏵ '+' - '.join())
+                dropdownText.set('⏵ ' +' - '.join(content.values()))
 
                 ttk.Button(
                     element,
@@ -385,13 +407,13 @@ def DropdownListMaker(container,
 
                 element.pack(anchor='w', pady=5)
 
-            for i in elements:
+            for i in elements['values']:
                 AddElement(i)
 
         addElementButton = ttk.Button(dropdownListFrame,
                                       text='Add',
                                       style='Buttons.TButton',
-                                      command=lambda: AddElement(''))
+                                      command=lambda: AddElement({}))
 
     isListHidden = True
     def ToggleList(*args):
@@ -491,6 +513,14 @@ def LabelledListMaker(container,
                                   value,
                                   mode='view',
                                   elementType='multi-line')
+                elementFrame.pack(anchor='w', pady=5)
+            elif elementType == 'structured-dropdown':
+                elementFrame = ttk.Frame(viewElementsFrame)
+                DropdownListMaker(elementFrame,
+                                  label,
+                                  value,
+                                  mode='view',
+                                  elementType='structured')
                 elementFrame.pack(anchor='w', pady=5)
 
     if mode in ('edit', 'create'):
