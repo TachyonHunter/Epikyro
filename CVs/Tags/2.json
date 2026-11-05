@@ -1,0 +1,24 @@
+{
+    "ID": 2,
+    "name": "Mahadevan",
+    "address": "Villa 121, 32nd St., Dubai",
+    "nationality": "Indian",
+    "eduMagnitude": 2,
+    "degrees": [
+        "Class 12",
+        "BCom."
+    ],
+    "organizations": [
+        "nil"
+    ],
+    "skills": [
+        "nil"
+    ],
+    "languages": [
+        "English"
+    ],
+    "achievements": [
+        "Graduated with Honors from Amity University."
+    ],
+    "totalWorkExperience": 0
+}

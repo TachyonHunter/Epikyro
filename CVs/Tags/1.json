@@ -1,0 +1,28 @@
+{
+    "ID": 1,
+    "name": "CNO IZECE",
+    "address": "314P, 15th Street, Dubai",
+    "nationality": "Indian",
+    "eduMagnitude": 4,
+    "degrees": [
+        "Class 12",
+        "BSc",
+        "MSc",
+        "PhD"
+    ],
+    "organizations": [
+        "Microsoft"
+    ],
+    "skills": [
+        "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+    ],
+    "languages": [
+        "English",
+        "French",
+        "Malayalam"
+    ],
+    "achievements": [
+        "nil"
+    ],
+    "totalWorkExperience": 2
+}

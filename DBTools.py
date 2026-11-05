@@ -101,12 +101,26 @@ def IsValueValid(valueType: str, value) -> str:
                       'languages',
                       'references',
                       'ID',
-                      'owner')
+                      'owner',
+                      'eduMagnitude',
+                      'totalWorkExperience',
+                      'degrees',
+                      'organizations',
+                      'achievements')
 
     # Below code handles invalidity.
     if valueType not in supportedTypes:
         return f'{valueType} unsupported.'
-    elif not value:
+    elif not value and valueType not in ('eduQualifications',
+                                         'workExperience',
+                                         'miscAchievements',
+                                         'skills',
+                                         'references',
+                                         'achievements',
+                                         'degrees',
+                                         'organizations',
+                                         'totalWorkExperience',
+                                         'eduMagnitude'):
         return f'Empty (falsy) value provided for {valueType}'
     elif valueType in ('username', 'address'):
         if not isinstance(value, str):
@@ -149,15 +163,26 @@ def IsValueValid(valueType: str, value) -> str:
     elif valueType == 'phoneNo':
         if not(value.isdigit() and len(value) == 10):
             return 'Invalid phone number.'
+    elif valueType in ('miscAchievements',
+                       'skills',
+                       'languages'):
+        if not(isinstance(value, list) and all(isinstance(i, str) for i in value)):
+            return f'Invalid value provided for {valueType}.'
     elif valueType in ('eduQualifications',
                        'workExperience',
-                       'miscAchievements',
-                       'skills',
-                       'languages',
                        'references'):
-        if not(isinstance(value, tuple) and all(isinstance(i, str) for i in value)):
+        if not (
+                isinstance(value, list)
+                and all(isinstance(i, dict) for i in value)
+                and all(isinstance(k, str) and isinstance(v, str) for i in value for k, v in i.items())
+        ):
             return f'Invalid value provided for {valueType}.'
-    elif valueType == 'ID':
+        elif (
+              value
+              and not(any(any(v != '' for v in i.values()) for i in value))
+        ):
+            return f'Invalid empty value provided for {valueType}.'
+    elif valueType == ('ID', 'eduMagnitude', 'totalWorkExperience'):
         if not(isinstance(value, int)):
             return f'INVALID ID.'
     return 'success' # If checks passed.

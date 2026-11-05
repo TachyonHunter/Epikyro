@@ -3,6 +3,7 @@ from tkinter import *
 import os
 import hashlib
 from tkinter import messagebox
+from typing import Callable
 
 import main
 

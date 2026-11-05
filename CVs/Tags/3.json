@@ -1,0 +1,28 @@
+{
+    "ID": 3,
+    "name": "Rohit Chopra",
+    "address": "H. S. R. Layout, Bloomtown",
+    "nationality": "Indian",
+    "eduMagnitude": 3,
+    "degrees": [
+        "Master's in Journalism",
+        "Bachelor's in Mass Communication",
+        "Class 12"
+    ],
+    "organizations": [
+        "CNO News"
+    ],
+    "skills": [
+        "Communication Skills",
+        "Spontaneity and Creativity"
+    ],
+    "languages": [
+        "English",
+        "Hindi"
+    ],
+    "achievements": [
+        "Journalist of the Month - CNO News",
+        "Winner of Inter-college Extempore"
+    ],
+    "totalWorkExperience": 2
+}

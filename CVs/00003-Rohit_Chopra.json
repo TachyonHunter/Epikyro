@@ -1,0 +1,62 @@
+{
+    "name": "Rohit Chopra",
+    "address": "H. S. R. Layout, Bloomtown",
+    "phoneNo": "0314159265",
+    "nationality": "Indian",
+    "gender": "Male",
+    "eduQualifications": [
+        {
+            "degree": "Master's in Journalism",
+            "institution": "IIA",
+            "year": "2023"
+        },
+        {
+            "degree": "Bachelor's in Mass Communication",
+            "institution": "Amity University",
+            "year": "2021"
+        },
+        {
+            "degree": "Class 12",
+            "institution": "CBSE",
+            "year": "2017"
+        }
+    ],
+    "workExperience": [
+        {
+            "position": "News Presenter",
+            "organization": "CNO News",
+            "tenure": "2024-2025"
+        },
+        {
+            "position": "Journalist",
+            "organization": "CNO News",
+            "tenure": "2023-2024"
+        }
+    ],
+    "miscAchievements": [
+        "Journalist of the Month - CNO News",
+        "Winner of Inter-college Extempore"
+    ],
+    "skills": [
+        "Communication Skills",
+        "Spontaneity and Creativity"
+    ],
+    "languages": [
+        "English",
+        "Hindi"
+    ],
+    "references": [
+        {
+            "person": "Williamson Theodore",
+            "position": "Head of Journalism, CNO News",
+            "contact": "williamson.synthesis@gmail.com"
+        },
+        {
+            "person": "Deepika Mathur",
+            "position": "Presenter, 24-Hour News",
+            "contact": "deepika.m24@gmail.com"
+        }
+    ],
+    "owner": "Adwaiy",
+    "ID": 3
+}

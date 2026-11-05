@@ -5,16 +5,36 @@
     "nationality": "Indian",
     "gender": "Male",
     "eduQualifications": [
-        {"degree":  "Class 12", "institution":  "CBSE", "year": "2026"},
-        {"degree":  "BSc", "institution":  "???", "year": "2030"},
-        {"degree":  "MSc", "institution":  "MIT", "year": "2032"},
-        {"degree":  "PhD", "institution":  "MIT", "year": "2040"}
+        {
+            "degree": "Class 12",
+            "institution": "AISSCE",
+            "year": "2026"
+        },
+        {
+            "degree": "BSc",
+            "institution": "???",
+            "year": "2030"
+        },
+        {
+            "degree": "MSc",
+            "institution": "MIT",
+            "year": "2032"
+        },
+        {
+            "degree": "PhD",
+            "institution": "MIT",
+            "year": "2040"
+        }
     ],
     "workExperience": [
-        {}
+        {
+            "position": "Sr. Manager",
+            "organization": "Microsoft",
+            "tenure": "2040-2042"
+        }
     ],
     "miscAchievements": [
-        "NA"
+        "nil"
     ],
     "skills": [
         "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
@@ -24,8 +44,7 @@
         "French",
         "Malayalam"
     ],
-    "references": [
-        {}
-    ],
-    "owner": "tempUser"
+    "references": [],
+    "owner": "Adwaiy",
+    "ID": 1
 }

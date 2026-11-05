@@ -2,10 +2,8 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from GUITools import WindowSizingTask, BindFamily, LabelledListMaker, ScrollableFrameMaker
 from CVTools import *
-from DBTools import IsValueValid
 from main import sessionStateVars
 from tagManagerWindow import TagManagerWindow
-
 
 def CVEditorWindow(mode, eventHub, ID: int | None = None):
     CVEditorWindow = Toplevel()
@@ -33,26 +31,13 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
     ttk.Label(mainframe,
               text=f"CV {ID}" if ID is not None else "Create CV:",
               justify='left',
-              style='Sub-headings.TLabel').grid(column=0, row=0, sticky='W')
-
-    def EducationTipCreator(container):
-        educationTipFrame = ttk.Frame(container)
-        ttk.Label(educationTipFrame,
-                  text='Kindly format educational qualifications as:\nDegree - Institution - Year',
-                  style='Body.TLabel', justify='left').grid(column=0, row=0, sticky='W', padx=(0, 4))
-        ttk.Label(educationTipFrame,
-                  text='eg: Class 12 - CBSE - 2020',
-                  style='Body.TLabel', justify='left').grid(column=0, row=1, sticky='W', padx=(0, 4))
-        return educationTipFrame
+              style='Headings.TLabel').grid(column=0, row=0, sticky='W')
 
     def WorkExpTipCreator(container):
         workExpTipFrame = ttk.Frame(container)
         ttk.Label(workExpTipFrame,
-                  text='Kindly format work experience as:\nPosition - Organization - Tenure (start-end)',
+                  text='Kindly format tenure as:\nStart - End (YYYY - YYYY, spaces are important.)\neg: 2022 - 2024',
                   style='Body.TLabel', justify='left').grid(column=0, row=0, sticky='W', padx=(0, 4))
-        ttk.Label(workExpTipFrame,
-                  text='eg: Scientist - Microsoft - 2020-2021',
-                  style='Body.TLabel', justify='left').grid(column=0, row=1, sticky='W', padx=(0, 4))
         return workExpTipFrame
 
     def GenericTipCreator(container):
@@ -61,16 +46,6 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
                   text='Kindly keep descriptions brief.',
                   style='Body.TLabel', justify='left').grid(column=0, row=0, sticky='W', padx=(0, 4))
         return genericTipFrame
-
-    def ReferenceTipCreator(container):
-        referenceTipFrame = ttk.Frame(container)
-        ttk.Label(referenceTipFrame,
-                  text='Kindly format work experience as:\nPerson\nPosition, Organization\nMode of contact',
-                  style='Body.TLabel', justify='left').grid(column=0, row=0, sticky='W', padx=(0, 4))
-        ttk.Label(referenceTipFrame,
-                  text='eg: Dr. Williamson S. Theodore\nHead of R&D, Microsoft\nwilliamson_synthesis@gmail.com',
-                  style='Body.TLabel', justify='left').grid(column=0, row=1, sticky='W', padx=(0, 4))
-        return referenceTipFrame
 
     fields = {
         'name': {
@@ -97,6 +72,7 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
             'label': 'Educational Qualifications: ',
             'value': {
                 'structure': {
+                    'structureMembers': ('degree', 'institution', 'year'),
                     'labels': {
                         'degree': 'Degree: ',
                         'institution': 'Institution: ',
@@ -108,14 +84,29 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
                         'year': 'single-line'
                     }
                 },
-                'values': details['eduQualifications'] if mode != 'create' else ('',),
+                'values': details['eduQualifications'] if mode != 'create' else [],
             },
             'elementType': 'structured-dropdown'
         },
         'workExperience': {
             'label': 'Work Experience: ',
-            'value': details['workExperience'] if mode != 'create' else ('',),
-            'elementType': 'dropdown-multi-line',
+            'value': {
+                'structure': {
+                    'structureMembers': ('position', 'organization', 'tenure'),
+                    'labels': {
+                        'position': 'Position Held: ',
+                        'organization': 'Organization: ',
+                        'tenure': 'Tenure: '
+                    },
+                    'elementTypes': {
+                        'position': 'single-line',
+                        'organization': 'single-line',
+                        'tenure': 'single-line'
+                    }
+                },
+                'values': details['workExperience'] if mode != 'create' else [],
+            },
+            'elementType': 'structured-dropdown',
             'tipCreator': lambda container: WorkExpTipCreator(container)
         },
         'miscAchievements': {
@@ -135,11 +126,25 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
             'value': details['languages'] if mode != 'create' else ('',),
             'elementType': 'dropdown-single-line'
         },
-        'references': {
+        'references':  {
             'label': 'References: ',
-            'value': details['references'] if mode != 'create' else ('',),
-            'elementType': 'dropdown-multi-line',
-            'tipCreator': lambda container: ReferenceTipCreator(container)
+            'value': {
+                'structure': {
+                    'structureMembers': ('person', 'position', 'contact'),
+                    'labels': {
+                        'person': 'Person: ',
+                        'position': 'Position, Organization: ',
+                        'contact': 'Mode of Contact: '
+                    },
+                    'elementTypes': {
+                        'person': 'single-line',
+                        'position': 'single-line',
+                        'contact': 'single-line'
+                    }
+                },
+                'values': details['references'] if mode != 'create' else [],
+            },
+            'elementType': 'structured-dropdown'
         }
     }
 
@@ -150,6 +155,7 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
             operationResult = CreateNewCV(account, details)
         elif mode == 'edit':
             details['owner'] = account
+            details['ID'] = ID
             operationResult = UpdateExistingCV(ID, details)
         else:
             raise ValueError(f'Why is submit being called in mode {mode}?')
@@ -163,6 +169,7 @@ def CVEditorWindow(mode, eventHub, ID: int | None = None):
             TagManagerWindow(details)
         else:
             messagebox.showerror('Error', operationResult, parent=mainframe)
+            return
 
         if mode == 'create':
             CVEditorWindow.destroy()

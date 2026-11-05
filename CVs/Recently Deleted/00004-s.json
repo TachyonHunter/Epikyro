@@ -1,0 +1,20 @@
+{
+    "ID": 4,
+    "owner": "tempUser",
+    "name": "s",
+    "address": "s",
+    "phoneNo": "1112223333",
+    "nationality": "s",
+    "gender": "d",
+    "eduQualifications": [],
+    "workExperience": [],
+    "miscAchievements": [
+        "",
+        ""
+    ],
+    "skills": [],
+    "languages": [
+        ""
+    ],
+    "references": []
+}

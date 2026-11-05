@@ -4,6 +4,7 @@ from deleteConfirmationWindow import DeleteConfirmationWindow
 from CVTools import ListOwnedCVs
 from GUITools import HoverableListMaker, BindFamily, WindowSizingTask
 from CVEditorWindow import CVEditorWindow
+from CVSearchWindow import CVSearchWindow
 
 def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
     if mode not in ('edit', 'view'):
@@ -15,13 +16,11 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
     CVManagerWindow.rowconfigure(1, weight=1)
     CVManagerWindow.columnconfigure(0, weight=1)
 
-    def CreateCVList(eventHub):
-        OwnedCVs = ListOwnedCVs(user)
-
+    def CreateCVList(eventHub, ownedCVs):
         listFrame = ttk.Frame(CVManagerWindow)
         listFrame.grid(row=1, column=0, sticky='NSEW')
 
-        if OwnedCVs == 'not found':
+        if ownedCVs == 'not found':
             ttk.Label(listFrame, text='No CVs associated with you...' if mode == 'edit' else f'No CVs associated with {user}...',
                       style='Sub-headings.TLabel',
                       justify='left').grid(row=1, column=0, sticky='NW', padx=8)
@@ -47,16 +46,23 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
             interactiveFrameOperations = lambda frame, name: EditInteractiveFrame(frame, name)
 
             # Makes the interactive, hoverable list.
-            HoverableListMaker(listFrame, [f'{k} - {v}' for k, v in OwnedCVs.items()], interactiveFrameOperations)
+            HoverableListMaker(listFrame, [f'{k} - {v}' for k, v in ownedCVs.items()], interactiveFrameOperations)
 
             return listFrame
 
     def RefreshCVList(eventHub, *args):
         nonlocal listFrame
         listFrame.destroy()
-        listFrame = CreateCVList(eventHub)
+        ownedCVs = ListOwnedCVs(user)
+        listFrame = CreateCVList(eventHub, ownedCVs)
 
-    listFrame = CreateCVList(eventHub)
+    def FilterCVs(CVs):
+        nonlocal listFrame
+        listFrame.destroy()
+        listFrame = CreateCVList(eventHub, CVs)
+
+    ownedCVs = ListOwnedCVs(user)
+    listFrame = CreateCVList(eventHub, ownedCVs)
 
     headFrame = ttk.Frame(CVManagerWindow)
     headFrame.grid(row=0, column=0, sticky='NSEW')
@@ -68,10 +74,6 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
 
     searchbarFrame = ttk.Frame(headFrame)
     searchbarFrame.grid(row=1, column=0, sticky='NSEW')
-    ttk.Label(searchbarFrame,
-              text="Search:",
-              style='Body.TLabel',
-              justify="left").grid(row=0, column=0, padx=4)
 
     ttk.Button(headFrame,
                text="Add New CV",
@@ -80,6 +82,7 @@ def CVManagerWindow(user: str, eventHub, mode: str = 'edit'):
     ttk.Button(headFrame,
                text="Search CVs",
                style='Buttons.TButton',
+               command=lambda: CVSearchWindow(lambda CVs: FilterCVs(CVs))
                ).grid(row=0, column=2, sticky='E', padx=10)
 
     WindowSizingTask(CVManagerWindow)

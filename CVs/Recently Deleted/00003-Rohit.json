@@ -1,0 +1,27 @@
+{
+    "ID": 3,
+    "owner": "tempUser",
+    "name": "Rohit",
+    "address": "sss",
+    "phoneNo": "1112223333",
+    "nationality": "s",
+    "gender": "s",
+    "eduQualifications": [
+        {
+            "degree": "sss",
+            "institution": "fff",
+            "year": "hhh"
+        }
+    ],
+    "workExperience": [],
+    "miscAchievements": [
+        ""
+    ],
+    "skills": [
+        ""
+    ],
+    "languages": [
+        ""
+    ],
+    "references": []
+}
